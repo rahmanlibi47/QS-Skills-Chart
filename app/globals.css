@@ -1,0 +1,8 @@
+:root{
+  --bg:#fff;
+  --fg:#111;
+}
+html,body,#root{height:100%;}
+body{margin:0;font-family:system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--fg)}
+input{padding:6px;margin:6px 0}
+button{padding:6px 10px;margin-top:8px}

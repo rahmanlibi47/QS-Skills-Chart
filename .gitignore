@@ -1,0 +1,6 @@
+# Ignore dependencies and build files
+.next
+node_modules
+
+# Ignore environment variable files
+.env*
