@@ -100,24 +100,33 @@ function SkillRow({ skill, name, group, onSaved }) {
       <input
         type="number"
         value={form.level1}
+        min={0}
+        max={3}
+        defaultValue={0}
         onChange={(e) =>
-          saveInstant({ ...form, level1: Number(e.target.value) })
+          saveInstant({ ...form, level1: Math.max(0, Math.min(3, Number(e.target.value))) })
         }
         style={{ width: 60 }}
       />
       <input
         type="number"
         value={form.level2}
+        min={0}
+        max={3}
+        defaultValue={0}
         onChange={(e) =>
-          saveInstant({ ...form, level2: Number(e.target.value) })
+          saveInstant({ ...form, level2: Math.max(0, Math.min(3, Number(e.target.value))) })
         }
         style={{ width: 60 }}
       />
       <input
         type="number"
         value={form.level3}
+        min={0}
+        max={3}
+        defaultValue={0}
         onChange={(e) =>
-          saveInstant({ ...form, level3: Number(e.target.value) })
+          saveInstant({ ...form, level3: Math.max(0, Math.min(3, Number(e.target.value))) })
         }
         style={{ width: 60 }}
       />
