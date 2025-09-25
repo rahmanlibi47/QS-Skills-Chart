@@ -121,10 +121,10 @@ export default function PolarChart({ skills = [] }) {
     };
   }, [skills]);
 
-  return (
-    <div>
+  return  (
+    <div >
       <h2>Skills Chart</h2>
-      <div ref={containerRef} style={{ height: 1080, width: "100%" }} />
+      <div ref={containerRef} style={{ height: 1080, width: "100%", marginLeft:'-30%'}} />
 
       {/* Grouped label list (Column 1 headings -> Column 2 items) with highlighted value badges */}
     </div>

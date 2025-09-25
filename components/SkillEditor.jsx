@@ -30,8 +30,8 @@ export default function SkillEditor({ skills = [], onChange, reload }) {
   }
 
   return (
-    <div>
-      <h2>Add Skills</h2>
+    <div style={{ paddingLeft: "2rem" }}>
+      <h2>Review Your Skills</h2>
       <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
         {groups.map((group) => (
           <div key={group.title}>
@@ -95,30 +95,18 @@ function SkillRow({ skill, name, group, onSaved }) {
   }
 
   return (
-    <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
-      <div style={{ flex: "0 0 260px" }}>{skill?.name ?? name}</div>
-      <input
-        type="number"
-        value={form.level1}
-        min={0}
-        max={3}
-        defaultValue={0}
-        onChange={(e) =>
-          saveInstant({ ...form, level1: Math.max(0, Math.min(3, Number(e.target.value))) })
-        }
-        style={{ width: 60 }}
-      />
-      <input
-        type="number"
-        value={form.level2}
-        min={0}
-        max={3}
-        defaultValue={0}
-        onChange={(e) =>
-          saveInstant({ ...form, level2: Math.max(0, Math.min(3, Number(e.target.value))) })
-        }
-        style={{ width: 60 }}
-      />
+    <div
+      style={{
+        display: "flex",
+        gap: 18,
+        alignItems: "center",
+        paddingLeft: "2rem",
+      }}
+    >
+      <div style={{ flex: "0 0 260px", fontSize: "20px" }}>
+        {skill?.name ?? name}
+      </div>
+
       <input
         type="number"
         value={form.level3}
@@ -126,7 +114,10 @@ function SkillRow({ skill, name, group, onSaved }) {
         max={3}
         defaultValue={0}
         onChange={(e) =>
-          saveInstant({ ...form, level3: Math.max(0, Math.min(3, Number(e.target.value))) })
+          saveInstant({
+            ...form,
+            level3: Math.max(0, Math.min(3, Number(e.target.value))),
+          })
         }
         style={{ width: 60 }}
       />
