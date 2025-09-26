@@ -55,22 +55,32 @@ export default function SkillEditor({ skills = [], onChange, reload }) {
 import { useEffect } from "react";
 
 function SkillRow({ skill, name, group, onSaved }) {
-  const [form, setForm] = useState({
-    level1: skill?.level1 ?? 0,
-    level2: skill?.level2 ?? 0,
-    level3: skill?.level3 ?? 0,
-  });
+  // Single value for level
+  const getInitialLevel = () => {
+    if (skill?.level3) return 3;
+    if (skill?.level2) return 2;
+    if (skill?.level1) return 1;
+    return 0;
+  };
+  const [level, setLevel] = useState(getInitialLevel());
 
   useEffect(() => {
-    setForm({
-      level1: skill?.level1 ?? 0,
-      level2: skill?.level2 ?? 0,
-      level3: skill?.level3 ?? 0,
-    });
+    setLevel(getInitialLevel());
   }, [skill?.level1, skill?.level2, skill?.level3]);
 
-  async function saveInstant(updatedForm) {
-    setForm(updatedForm);
+  // Map single level to all three levels
+  function getLevels(val) {
+    val = Math.max(0, Math.min(3, Number(val)));
+    return {
+      level1: val >= 1 ? 1 : 0,
+      level2: val >= 2 ? 2 : 0,
+      level3: val === 3 ? 3 : 0,
+    };
+  }
+
+  async function saveInstant(val) {
+    setLevel(val);
+    const updatedForm = getLevels(val);
     if (skill && skill._id) {
       await fetch("/api/skills", {
         method: "PATCH",
@@ -87,6 +97,12 @@ function SkillRow({ skill, name, group, onSaved }) {
     if (onSaved) onSaved();
   }
 
+  // Determine color based on level value
+  let badgeColor = "#ccc";
+  if (level === 1) badgeColor = "#acacac";
+  else if (level === 2) badgeColor = "#f48458";
+  else if (level === 3) badgeColor = "#ea6071";
+
   return (
     <div
       style={{
@@ -96,22 +112,18 @@ function SkillRow({ skill, name, group, onSaved }) {
         paddingLeft: "2rem",
       }}
     >
-      <div style={{ flex: "0 0 260px", fontSize: "20px" }}>
+      <div style={{ flex: "0 0 260px", fontSize: "20px", display: "flex", alignItems: "center", gap: 8 }}>
+        <span style={{ width: 18, height: 18, background: badgeColor, display: "inline-block", borderRadius: "50%", border: "1px solid #333" }} />
         {skill?.name ?? name}
       </div>
 
       <input
         type="number"
-        value={form.level3}
+        value={level}
         min={0}
         max={3}
         defaultValue={0}
-        onChange={(e) =>
-          saveInstant({
-            ...form,
-            level3: Math.max(0, Math.min(3, Number(e.target.value))),
-          })
-        }
+        onChange={(e) => saveInstant(Math.max(0, Math.min(3, Number(e.target.value))))}
         style={{ width: 60 }}
       />
     </div>

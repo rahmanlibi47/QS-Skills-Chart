@@ -45,7 +45,7 @@ export default function PolarChart({ skills = [] }) {
         data: orderedLabels.map((name) => findSkill(name).level2 ?? 0),
         backgroundColor: "rgba(244, 132, 88, 0.2)",
         borderColor: "#f48458",
-        pointBackgroundColor: "#f48458",
+        pointBackgroundColor: "#65f458ff",
       },
       {
         label: "Level 3",
@@ -94,15 +94,36 @@ export default function PolarChart({ skills = [] }) {
         });
       }
       const anychart = window.anychart;
-      const level1 = orderedLabels.map((name) => ({ x: name, value: findSkill(name).level1 ?? 0 }));
-      const level2 = orderedLabels.map((name) => ({ x: name, value: findSkill(name).level2 ?? 0 }));
-      const level3 = orderedLabels.map((name) => ({ x: name, value: findSkill(name).level3 ?? 0 }));
+      // Only show the highest level for each skill
+      const level1 = [];
+      const level2 = [];
+      const level3 = [];
+      orderedLabels.forEach((name) => {
+        const skill = findSkill(name);
+        if (skill.level3 === 3) {
+          level3.push({ x: name, value: 3 });
+          level2.push({ x: name, value: 0 });
+          level1.push({ x: name, value: 0 });
+        } else if (skill.level2 === 2) {
+          level3.push({ x: name, value: 0 });
+          level2.push({ x: name, value: 2 });
+          level1.push({ x: name, value: 0 });
+        } else if (skill.level1 === 1) {
+          level3.push({ x: name, value: 0 });
+          level2.push({ x: name, value: 0 });
+          level1.push({ x: name, value: 1 });
+        } else {
+          level3.push({ x: name, value: 0 });
+          level2.push({ x: name, value: 0 });
+          level1.push({ x: name, value: 0 });
+        }
+      });
       const chart = anychart.polar();
       const seriesGray = chart.column(level1);
-      seriesGray.color("#acacac");
+      seriesGray.color("#dcdd88ff");
       seriesGray.zIndex(1);
       const seriesOrange = chart.column(level2);
-      seriesOrange.color("#f48458");
+      seriesOrange.color("#4ff779ff");
       seriesOrange.zIndex(1);
       const seriesRed = chart.column(level3);
       seriesRed.color("#ea6071");
