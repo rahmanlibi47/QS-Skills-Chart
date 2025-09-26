@@ -13,7 +13,7 @@ import {
   ArcElement,
 } from "chart.js";
 import groups from "../lib/groups";
-
+import ChartDataLabels from "chartjs-plugin-datalabels";
 ChartJS.register(
   RadialLinearScale,
   PointElement,
@@ -21,7 +21,8 @@ ChartJS.register(
   Filler,
   Tooltip,
   Legend,
-  ArcElement
+  ArcElement,
+  ChartDataLabels
 );
 
 export default function PolarChart({ skills = [] }) {
@@ -244,41 +245,53 @@ export default function PolarChart({ skills = [] }) {
     ],
   };
   const polarAreaOptions = {
-    plugins: {
-      legend: { display: false },
-      tooltip: {
-        callbacks: {
-          label: function (context) {
-            const idx = context.dataIndex;
-            const skillName = polarAreaLabels[idx];
-            const value = polarAreaValues[idx];
-            let nextGoal =
-              value < 3
-                ? `Click to set goal for Level ${value + 1}`
-                : "Max Level";
-            return `${skillName}: Level ${value} (${nextGoal})`;
-          },
+  plugins: {
+    legend: { display: false },
+    tooltip: {
+      callbacks: {
+        label: function (context) {
+          const idx = context.dataIndex;
+          const skillName = polarAreaLabels[idx];
+          const value = polarAreaValues[idx];
+          let nextGoal =
+            value < 3
+              ? `Click to set goal for Level ${value + 1}`
+              : "Max Level";
+          return `${skillName}: Level ${value} (${nextGoal})`;
         },
       },
-      dottedBorderPlugin,
     },
-    scale: {
-      ticks: { beginAtZero: true, stepSize: 1, max: 3 },
+    datalabels: {
+      color: "#111",
+      font: {
+        weight: "bold",
+        size: 10,
+      },
+     formatter: (value, context) =>
+    polarAreaLabels[context.dataIndex],
+  anchor: "end",  // base outside of arc
+  align: "end", // move further outward radially
+  offset: 0,     // bigger = further outside
+  clip: false,    // don’t cut off
     },
-    responsive: true,
-    maintainAspectRatio: false,
-    onClick: (evt, elements) => {
-      if (elements && elements.length > 0) {
-        const idx = elements[0].index;
-        const skillName = polarAreaLabels[idx];
-        const value = polarAreaValues[idx];
-        if (value < 3) {
-          // Only allow click for skills not at max level
-          alert(`Set goal for: ${skillName} (Level ${value + 1})`);
-        }
+  },
+  scale: {
+    ticks: { beginAtZero: true, stepSize: 1, max: 3 },
+  },
+  responsive: true,
+  maintainAspectRatio: false,
+  onClick: (evt, elements) => {
+    if (elements && elements.length > 0) {
+      const idx = elements[0].index;
+      const skillName = polarAreaLabels[idx];
+      const value = polarAreaValues[idx];
+      if (value < 3) {
+        alert(`Set goal for: ${skillName} (Level ${value + 1})`);
       }
-    },
-  };
+    }
+  },
+};
+
 
   return (
     <div>
@@ -322,20 +335,20 @@ export default function PolarChart({ skills = [] }) {
         </button>
       </div>
       {chartType === "radar" && (
-        <div style={{ height: 900, width: "100%", maxWidth: 900 }}>
+        <div style={{ height: 700, width: "100%" }}>
           <Radar data={radarData} options={radarOptions} />
         </div>
       )}
       {chartType === "polar" && (
         <div
           ref={containerRef}
-          style={{ height: 900, width: "100%", maxWidth: 1900 }}
+          style={{ height: 700, width: "100%", }}
         />
       )}
       {chartType === "polarArea" && (
         <div style={{ marginTop: 48 }}>
           <h2>Polar Area Chart (Skills & Levels)</h2>
-          <div style={{ height: 900, width: "100%", maxWidth: 700 }}>
+          <div style={{ height: 700, width: "100%" }}>
             <PolarArea data={polarAreaData} options={polarAreaOptions} plugins={[dottedBorderPlugin]} />
           </div>
           {/* Legend */}
