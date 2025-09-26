@@ -125,40 +125,33 @@ export default function PolarChart({ skills = [] }) {
         });
       }
       const anychart = window.anychart;
-      // Only show the highest level for each skill
-      const level1 = [];
-      const level2 = [];
-      const level3 = [];
-      orderedLabels.forEach((name) => {
-        const skill = findSkill(name);
-        if (skill.level3 === 3) {
-          level3.push({ x: name, value: 3 });
-          level2.push({ x: name, value: 0 });
-          level1.push({ x: name, value: 0 });
-        } else if (skill.level2 === 2) {
-          level3.push({ x: name, value: 0 });
-          level2.push({ x: name, value: 2 });
-          level1.push({ x: name, value: 0 });
-        } else if (skill.level1 === 1) {
-          level3.push({ x: name, value: 0 });
-          level2.push({ x: name, value: 0 });
-          level1.push({ x: name, value: 1 });
-        } else {
-          level3.push({ x: name, value: 0 });
-          level2.push({ x: name, value: 0 });
-          level1.push({ x: name, value: 0 });
+      // Only show the highest level for each skill, and color by group
+      const groupColors = {
+        "HCD": "#4269D0",
+        "Project Management": "#EFB118",
+        "Engagement & Communication / Business Development": "#FF725C",
+        "Research & Development": "#3CA951"
+      };
+      function getGroupColor(skillName) {
+        for (const group of groups) {
+          if (group.items.includes(skillName)) {
+            return groupColors[group.title] || "#ccc";
+          }
         }
+        return "#ccc";
+      }
+      // Build data for each skill with its value and color
+      const skillData = orderedLabels.map((name) => {
+        const skill = findSkill(name);
+        let value = 0;
+        if (skill.level3 === 3) value = 3;
+        else if (skill.level2 === 2) value = 2;
+        else if (skill.level1 === 1) value = 1;
+        return { x: name, value, fill: { color: getGroupColor(name) } };
       });
       const chart = anychart.polar();
-      const seriesGray = chart.column(level1);
-      seriesGray.color("#dcdd88ff");
-      seriesGray.zIndex(1);
-      const seriesOrange = chart.column(level2);
-      seriesOrange.color("#4ff779ff");
-      seriesOrange.zIndex(1);
-      const seriesRed = chart.column(level3);
-      seriesRed.color("#ea6071");
-      seriesRed.zIndex(1);
+      const series = chart.column(skillData);
+      series.zIndex(1);
       chart.xScale("ordinal");
       chart.yScale().minimum(0).maximum(3);
       chart.yScale().ticks({ interval: 1 });
