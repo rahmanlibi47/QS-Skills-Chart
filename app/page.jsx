@@ -36,7 +36,6 @@ export default function Page() {
         </div>
         
       </div>
-      <DownloadScreenshotButton targetId="skills-content" />
 
     </main>
   );

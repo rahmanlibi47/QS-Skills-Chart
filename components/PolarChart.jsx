@@ -14,6 +14,7 @@ import {
 } from "chart.js";
 import groups from "../lib/groups";
 import ChartDataLabels from "chartjs-plugin-datalabels";
+import DownloadScreenshotButton from "./DownloadScreenshotButton";
 ChartJS.register(
   RadialLinearScale,
   PointElement,
@@ -31,7 +32,10 @@ export default function PolarChart({ skills = [], userName = "" }) {
     // Remove # if present
     hex = hex.replace(/^#/, "");
     if (hex.length === 3) {
-      hex = hex.split("").map((c) => c + c).join("");
+      hex = hex
+        .split("")
+        .map((c) => c + c)
+        .join("");
     }
     const num = parseInt(hex, 16);
     let r = (num >> 16) & 0xff;
@@ -40,9 +44,7 @@ export default function PolarChart({ skills = [], userName = "" }) {
     r = Math.round(r + (255 - r) * (percent / 100));
     g = Math.round(g + (255 - g) * (percent / 100));
     b = Math.round(b + (255 - b) * (percent / 100));
-    return `#${((1 << 24) + (r << 16) + (g << 8) + b)
-      .toString(16)
-      .slice(1)}`;
+    return `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)}`;
   }
   // Plugin to draw radial labels fixed at chart edge
   const outerLabelPlugin = {
@@ -57,7 +59,7 @@ export default function PolarChart({ skills = [], userName = "" }) {
       const outerRadius =
         meta.data[0]?.outerRadius ||
         Math.min(chartArea.width, chartArea.height) / 2;
-      const margin = 8;
+      const margin = 5;
 
       ctx.save();
       ctx.font = "10px sans-serif";
@@ -71,7 +73,7 @@ export default function PolarChart({ skills = [], userName = "" }) {
         let angle = (arc.startAngle + arc.endAngle) / 2;
         // Add small offset to avoid clipping at top/bottom
         if (angle % Math.PI === 0) {
-          angle += 0.04;
+          angle += 0.54;
         }
         const x = centerX + (outerRadius + margin) * Math.cos(angle);
         const y = centerY + (outerRadius + margin) * Math.sin(angle);
@@ -343,7 +345,7 @@ export default function PolarChart({ skills = [], userName = "" }) {
 
       {chartType === "polarArea" && (
         <div style={{ marginTop: 48 }}>
-          <div style={{ minHeight: 850,  }}>
+          <div style={{ minHeight: 850 }}>
             <PolarArea
               data={polarAreaData}
               options={polarAreaOptions}
@@ -353,6 +355,7 @@ export default function PolarChart({ skills = [], userName = "" }) {
           {/* Legend for group color codes */}
         </div>
       )}
+      <DownloadScreenshotButton targetId="skills-content" />
     </div>
   );
 }
