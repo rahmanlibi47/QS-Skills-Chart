@@ -195,10 +195,11 @@ function SkillRow({ skill, name, group, onSaved }) {
           listStyle: "disc inside",
         }}
       >
-        Lorem ipsum dolor sit amet consectetur, <br />
-        adipisicing elit. Quod fugiat Dicta ea autem illum adipiscm ad minima
-        officia?
-        <br />
+        
+        Know where and how to search for project-relevant information using
+        reliable sources and tools. <br /><br />Digest and organise secondary research
+        materials through detailed note-taking. <br /> <br />Identify relevant subject matter
+        experts who can provide valuable project insights.
       </p>
     </div>
   );
