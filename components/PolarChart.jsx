@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState, useRef, useEffect } from "react";
-import { Radar } from "react-chartjs-2";
+import { Radar, PolarArea } from "react-chartjs-2";
 import {
   Chart as ChartJS,
   RadialLinearScale,
@@ -10,6 +10,7 @@ import {
   Filler,
   Tooltip,
   Legend,
+  ArcElement,
 } from "chart.js";
 import groups from "../lib/groups";
 
@@ -19,11 +20,12 @@ ChartJS.register(
   LineElement,
   Filler,
   Tooltip,
-  Legend
+  Legend,
+  ArcElement
 );
 
 export default function PolarChart({ skills = [] }) {
-  const [chartType, setChartType] = useState("radar"); // "radar" or "polar"
+  const [chartType, setChartType] = useState("radar"); // "radar", "polar", or "polarArea"
   const containerRef = useRef(null);
   const orderedLabels = useMemo(() => groups.flatMap((g) => g.items), []);
   const findSkill = (name) =>
@@ -178,6 +180,57 @@ export default function PolarChart({ skills = [] }) {
     { label: "Level 3", color: "#ea6071" },
   ];
 
+  // --- Polar Area Chart: Each skill as a segment, value is its level, color by level ---
+  const polarAreaLabels = orderedLabels;
+  const polarAreaValues = orderedLabels.map((name) => {
+    const s = findSkill(name);
+    if (s.level3 === 3) return 3;
+    if (s.level2 === 2) return 2;
+    if (s.level1 === 1) return 1;
+    return 0;
+  });
+  const polarAreaColors = polarAreaValues.map((v) => {
+    if (v === 1) return "#acacac";
+    if (v === 2) return "#f48458";
+    if (v === 3) return "#ea6071";
+    return "#ccc";
+  });
+  const polarAreaData = {
+    labels: polarAreaLabels,
+    datasets: [
+      {
+        data: polarAreaValues,
+        backgroundColor: polarAreaColors,
+        borderColor: polarAreaColors,
+      },
+    ],
+  };
+  const polarAreaOptions = {
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        callbacks: {
+          label: function(context) {
+            return `${context.label}: Level ${context.raw}`;
+          }
+        }
+      }
+    },
+    scale: {
+      ticks: { beginAtZero: true, stepSize: 1, max: 3 },
+    },
+    responsive: true,
+    maintainAspectRatio: false,
+    onClick: (evt, elements) => {
+      if (elements && elements.length > 0) {
+        const idx = elements[0].index;
+        const skillName = polarAreaLabels[idx];
+        // TODO: open goal-setting modal or handle click
+        alert(`Set goal for: ${skillName}`);
+      }
+    },
+  };
+
   return (
     <div>
       <h2>Skills Chart</h2>
@@ -190,29 +243,57 @@ export default function PolarChart({ skills = [] }) {
         </button>
         <button
           onClick={() => setChartType("polar")}
-          style={{ padding: "8px 16px", background: chartType === "polar" ? "#e0e0e0" : "#fff", border: "1px solid #ccc", borderRadius: 4 }}
+          style={{ marginRight: 8, padding: "8px 16px", background: chartType === "polar" ? "#e0e0e0" : "#fff", border: "1px solid #ccc", borderRadius: 4 }}
         >
           Polar Chart
         </button>
+        <button
+          onClick={() => setChartType("polarArea")}
+          style={{ padding: "8px 16px", background: chartType === "polarArea" ? "#e0e0e0" : "#fff", border: "1px solid #ccc", borderRadius: 4 }}
+        >
+          Polar Area Chart
+        </button>
       </div>
-      {chartType === "radar" ? (
+      {chartType === "radar" && (
         <div style={{ height: 900, width: "100%", maxWidth: 900 }}>
           <Radar data={radarData} options={radarOptions} />
         </div>
-      ) : (
+      )}
+      {chartType === "polar" && (
         <div ref={containerRef} style={{ height: 900, width: "100%", maxWidth: 1900 }} />
       )}
-      <div style={{ marginTop: 32 }}>
-        <h3>Color Code Values</h3>
-        <div style={{ display: "flex", gap: 24 }}>
-          {colorCodes.map((c) => (
-            <div key={c.label} style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <span style={{ width: 24, height: 24, background: c.color, display: "inline-block", borderRadius: "50%", border: "1px solid #333" }} />
-              <span>{c.label}</span>
+      {chartType === "polarArea" && (
+        <div style={{ marginTop: 48 }}>
+          <h2>Polar Area Chart (Skills & Levels)</h2>
+          <div style={{ height: 400, width: "100%", maxWidth: 700 }}>
+            <PolarArea data={polarAreaData} options={polarAreaOptions} />
+          </div>
+          {/* Legend */}
+          <div style={{ marginTop: 16 }}>
+            <h4>Legend</h4>
+            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <span style={{ width: 24, height: 24, background: "#acacac", display: "inline-block", borderRadius: "4px", border: "1px solid #333" }} />
+                <span>Level 1</span>
+              </div>
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <span style={{ width: 24, height: 24, background: "#f48458", display: "inline-block", borderRadius: "4px", border: "1px solid #333" }} />
+                <span>Level 2</span>
+              </div>
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <span style={{ width: 24, height: 24, background: "#ea6071", display: "inline-block", borderRadius: "4px", border: "1px solid #333" }} />
+                <span>Level 3</span>
+              </div>
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <span style={{ width: 24, height: 24, background: "#fff", display: "inline-block", borderRadius: "4px", border: "1px solid #333" }} />
+                <span>Unset</span>
+              </div>
             </div>
-          ))}
+          </div>
         </div>
-      </div>
+      )}
+
+      
     </div> 
   );
 }
