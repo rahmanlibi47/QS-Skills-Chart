@@ -78,23 +78,26 @@ function SkillRow({ skill, name, group, onSaved }) {
     };
   }
 
-  async function saveInstant(val) {
-    setLevel(val);
+  function saveInstant(val) {
+    setLevel(val); // update UI instantly
     const updatedForm = getLevels(val);
-    if (skill && skill._id) {
-      await fetch("/api/skills", {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ _id: skill._id, ...updatedForm }),
-      });
-    } else {
-      await fetch("/api/skills", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, group, ...updatedForm }),
-      });
-    }
-    if (onSaved) onSaved();
+    // Save to backend asynchronously
+    (async () => {
+      if (skill && skill._id) {
+        await fetch("/api/skills", {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ _id: skill._id, ...updatedForm }),
+        });
+      } else {
+        await fetch("/api/skills", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name, group, ...updatedForm }),
+        });
+      }
+      if (onSaved) onSaved();
+    })();
   }
 
   // Determine color based on group title
