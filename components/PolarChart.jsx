@@ -26,6 +26,62 @@ ChartJS.register(
 );
 
 export default function PolarChart({ skills = [] }) {
+  // Helper to lighten a hex color by a percent (0-100)
+  function lightenColor(hex, percent) {
+    // Remove # if present
+    hex = hex.replace(/^#/, "");
+    if (hex.length === 3) {
+      hex = hex.split("").map((c) => c + c).join("");
+    }
+    const num = parseInt(hex, 16);
+    let r = (num >> 16) & 0xff;
+    let g = (num >> 8) & 0xff;
+    let b = num & 0xff;
+    r = Math.round(r + (255 - r) * (percent / 100));
+    g = Math.round(g + (255 - g) * (percent / 100));
+    b = Math.round(b + (255 - b) * (percent / 100));
+    return `#${((1 << 24) + (r << 16) + (g << 8) + b)
+      .toString(16)
+      .slice(1)}`;
+  }
+  // Plugin to draw radial labels fixed at chart edge
+  const outerLabelPlugin = {
+    id: "outerLabelPlugin",
+    afterDraw(chart) {
+      if (chart.config.type !== "polarArea") return;
+      const { ctx, chartArea } = chart;
+      const labels = chart.data.labels;
+      const meta = chart.getDatasetMeta(0);
+      const centerX = (chartArea.left + chartArea.right) / 2;
+      const centerY = (chartArea.top + chartArea.bottom) / 2;
+      const outerRadius =
+        meta.data[0]?.outerRadius ||
+        Math.min(chartArea.width, chartArea.height) / 2;
+      const margin = 8;
+
+      ctx.save();
+      ctx.font = "10px sans-serif";
+      ctx.fillStyle = "#111";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+
+      // Place labels at the center angle of each segment
+      meta.data.forEach((arc, i) => {
+        if (!arc) return;
+        let angle = (arc.startAngle + arc.endAngle) / 2;
+        // Add small offset to avoid clipping at top/bottom
+        if (angle % Math.PI === 0) {
+          angle += 0.04;
+        }
+        const x = centerX + (outerRadius + margin) * Math.cos(angle);
+        const y = centerY + (outerRadius + margin) * Math.sin(angle);
+        ctx.fillText(labels[i], x, y);
+      });
+
+      ctx.restore();
+    },
+  };
+
   // Chart.js plugin for dotted border lines between segments
   const dottedBorderPlugin = {
     id: "dottedBorderPlugin",
@@ -39,7 +95,7 @@ export default function PolarChart({ skills = [] }) {
       const radius = Math.min(chartArea.width, chartArea.height) / 2;
       ctx.save();
       ctx.setLineDash([2, 6]); // Dotted line: 4px dash, 6px gap
-      ctx.strokeStyle = "#f1f1f1ff";
+      ctx.strokeStyle = "#c4c4c4ff";
       ctx.lineWidth = 1.2;
       meta.data.forEach((arc, i) => {
         const startAngle = arc.startAngle;
@@ -133,7 +189,15 @@ export default function PolarChart({ skills = [] }) {
     if (s.level1 === 1) return 1;
     return 0;
   });
-  const polarAreaColors = orderedLabels.map((name) => getGroupColor(name));
+  // Color gradience by level: level3 = group color, level2 = 30% lighter, level1 = 51% lighter
+  const polarAreaColors = orderedLabels.map((name, idx) => {
+    const baseColor = getGroupColor(name);
+    const value = polarAreaValues[idx];
+    if (value === 3) return baseColor;
+    if (value === 2) return lightenColor(baseColor, 30);
+    if (value === 1) return lightenColor(baseColor, 51);
+    return "#eee";
+  });
   const polarAreaData = {
     labels: polarAreaLabels,
     datasets: [
@@ -151,24 +215,53 @@ export default function PolarChart({ skills = [] }) {
     plugins: {
       legend: {
         display: true,
+        position: "bottom",
+
         labels: {
           generateLabels: function (chart) {
-            // Only show group titles as legend items
             const groupColors = {
               HCD: "#4269D0",
               "Project Management": "#EFB118",
               "Engagement & Communication / Business Development": "#FF725C",
               "Research & Development": "#3CA951",
             };
-            return Object.entries(groupColors).map(([title, color]) => ({
+            // Map group to indices in chart.data.labels
+            const groupIndices = {};
+            Object.keys(groupColors).forEach((group) => {
+              groupIndices[group] = [];
+            });
+            chart.data.labels.forEach((label, idx) => {
+              for (const group of Object.keys(groupColors)) {
+                if (
+                  groups.find((g) => g.title === group)?.items.includes(label)
+                ) {
+                  groupIndices[group].push(idx);
+                }
+              }
+            });
+            return Object.entries(groupColors).map(([title, color], i) => ({
               text: title,
               fillStyle: color,
               strokeStyle: "#333",
               lineWidth: 1,
               hidden: false,
-              index: 0,
+              indices: groupIndices[title], // store all indices for this group
+              datasetIndex: 0,
+              groupIndex: i,
             }));
           },
+        },
+        onClick: function (e, legendItem, legend) {
+          const chart = legend.chart;
+          const indices = legendItem.indices;
+          if (!indices || !indices.length) return;
+          const meta = chart.getDatasetMeta(0);
+          // Toggle visibility for all segments in the group
+          const anyVisible = indices.some((idx) => !meta.data[idx].hidden);
+          indices.forEach((idx) => {
+            meta.data[idx].hidden = anyVisible ? true : false;
+          });
+          chart.update();
         },
       },
       tooltip: {
@@ -185,18 +278,6 @@ export default function PolarChart({ skills = [] }) {
             }
           },
         },
-      },
-      datalabels: {
-        color: "#111",
-        font: {
-          weight: "bold",
-          size: 10,
-        },
-        formatter: (value, context) => polarAreaLabels[context.dataIndex],
-        anchor: "end", // base outside of arc
-        align: "end", // move further outward radially
-        offset: 0, // bigger = further outside
-        clip: false, // don’t cut off
       },
     },
     scale: {
@@ -219,7 +300,7 @@ export default function PolarChart({ skills = [] }) {
   return (
     <div>
       <h2>Skills Chart</h2>
-      <div style={{ marginBottom: 16 }}>
+      <div>
         {/* <button
           onClick={() => setChartType("radar")}
           style={{
@@ -260,11 +341,11 @@ export default function PolarChart({ skills = [] }) {
 
       {chartType === "polarArea" && (
         <div style={{ marginTop: 48 }}>
-          <div style={{ height: 700, width: "100%" }}>
+          <div style={{ height: 600, width: "70%", paddingTop: 40 }}>
             <PolarArea
               data={polarAreaData}
               options={polarAreaOptions}
-              plugins={[dottedBorderPlugin]}
+              plugins={[dottedBorderPlugin, outerLabelPlugin]}
             />
           </div>
           {/* Legend for group color codes */}

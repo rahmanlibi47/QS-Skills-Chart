@@ -21,7 +21,7 @@ export default function SkillEditor({ skills = [], onChange, reload }) {
               border: "1px solid #ccc",
               background: selectedTab === idx ? "#e0e0e0" : "#fff",
               fontWeight: selectedTab === idx ? "bold" : "normal",
-              cursor: "pointer"
+              cursor: "pointer",
             }}
           >
             {group.title}
@@ -102,10 +102,10 @@ function SkillRow({ skill, name, group, onSaved }) {
 
   // Determine color based on group title
   const groupColors = {
-    "HCD": "#4269D0",
+    HCD: "#4269D0",
     "Project Management": "#EFB118",
     "Engagement & Communication / Business Development": "#FF725C",
-    "Research & Development": "#3CA951"
+    "Research & Development": "#3CA951",
   };
   const badgeColor = groupColors[group] || "#ccc";
 
@@ -118,12 +118,35 @@ function SkillRow({ skill, name, group, onSaved }) {
         paddingLeft: "2rem",
       }}
     >
-      <div style={{ flex: "0 0 260px", fontSize: "20px", display: "flex", alignItems: "center", gap: 8 }}>
+      <div
+        style={{
+          flex: "0 0 260px",
+          fontSize: "20px",
+          display: "flex",
+          alignItems: "center",
+          gap: 8,
+        }}
+      >
         {skill?.name ?? name}
       </div>
 
-      {/* Star selector for skill level */}
+      {/* Star selector for skill level, with 'Not yet tried' icon */}
       <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+        <span
+          onClick={() => saveInstant(0)}
+          style={{
+            cursor: "pointer",
+            fontSize: 24,
+            color: level === 0 ? "#888" : "#ccc",
+            marginRight: 2,
+            userSelect: "none",
+            padding: "2px 6px",
+            transition: "color 0.2s, border 0.2s, background 0.2s",
+          }}
+          title="Not yet tried"
+        >
+          ●
+        </span>
         {[1, 2, 3].map((lvl) => (
           <span
             key={lvl}
