@@ -6,27 +6,43 @@ import groups from "../lib/groups";
 export default function SkillEditor({ skills = [], onChange, reload }) {
   const [selectedTab, setSelectedTab] = useState(0);
 
+  // Group colors for tabs (same as PolarChart)
+  const groupColors = {
+    HCD: "#4269D0",
+    "Project Management": "#EFB118",
+    "Engagement & Communication / Business Development": "#FF725C",
+    "Research & Development": "#3CA951",
+  };
+
   return (
     <div style={{ paddingLeft: "1rem" }}>
       <h2>Review Your Current Skills</h2>
       {/* Tab bar */}
       <div style={{ display: "flex", gap: 4, marginBottom: 24 }}>
-        {groups.map((group, idx) => (
-          <button
-            key={group.title}
-            onClick={() => setSelectedTab(idx)}
-            style={{
-              padding: "8px 16px",
-              borderRadius: 4,
-              border: "1px solid #ccc",
-              background: selectedTab === idx ? "#e0e0e0" : "#fff",
-              fontWeight: selectedTab === idx ? "bold" : "normal",
-              cursor: "pointer",
-            }}
-          >
-            {group.title}
-          </button>
-        ))}
+        {groups.map((group, idx) => {
+          const color = groupColors[group.title] || "#ccc";
+          const selected = selectedTab === idx;
+          return (
+            <button
+              key={group.title}
+              onClick={() => setSelectedTab(idx)}
+              style={{
+                padding: "8px 16px",
+                borderRadius: 4,
+                border: `2px solid ${color}`,
+                background: color,
+                color: "#fffefeff",
+                fontWeight: selected ? "bold" : "normal",
+                opacity: selected ? 1 : 0.7,
+                cursor: "pointer",
+                boxShadow: selected ? `0 2px 8px ${color}33` : "none",
+                transition: "all 0.2s",
+              }}
+            >
+              {group.title}
+            </button>
+          );
+        })}
       </div>
       {/* Skills for selected tab */}
       <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>

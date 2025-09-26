@@ -25,7 +25,7 @@ ChartJS.register(
   ChartDataLabels
 );
 
-export default function PolarChart({ skills = [] }) {
+export default function PolarChart({ skills = [], userName = "" }) {
   // Helper to lighten a hex color by a percent (0-100)
   function lightenColor(hex, percent) {
     // Remove # if present
@@ -299,7 +299,7 @@ export default function PolarChart({ skills = [] }) {
 
   return (
     <div>
-      <h2>Skills Chart</h2>
+      <h2>Skills view for {userName}</h2>
       <div>
         {/* <button
           onClick={() => setChartType("radar")}

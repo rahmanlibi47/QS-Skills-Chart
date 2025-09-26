@@ -3,9 +3,11 @@
 import { useEffect, useState } from "react";
 import SkillEditor from "../components/SkillEditor";
 import PolarChart from "../components/PolarChart";
+import Landing from "./landing";
 
 export default function Page() {
   const [skills, setSkills] = useState([]);
+  const [userName, setUserName] = useState("");
 
   async function loadSkills() {
     const res = await fetch("/api/skills");
@@ -13,16 +15,20 @@ export default function Page() {
   }
 
   useEffect(() => {
-    loadSkills();
-  }, []);
+    if (userName) loadSkills();
+  }, [userName]);
+
+  if (!userName) {
+    return <Landing onSubmit={setUserName} />;
+  }
 
   return (
     <main style={{ display: "flex" }}>
       <div style={{ flex: 1 }}>
-        <SkillEditor skills={skills} onChange={setSkills} reload={loadSkills} />
+        <SkillEditor skills={skills} onChange={setSkills} reload={loadSkills} userName={userName} />
       </div>
       <div style={{ flex: 1 }}>
-        <PolarChart skills={skills} />
+        <PolarChart skills={skills} userName={userName} />
       </div>
     </main>
   );
