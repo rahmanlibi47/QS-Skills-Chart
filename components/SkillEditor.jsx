@@ -4,56 +4,49 @@ import { useState } from "react";
 import groups from "../lib/groups";
 
 export default function SkillEditor({ skills = [], onChange, reload }) {
-  const [form, setForm] = useState({
-    name: "",
-    group: groups[0]?.title || "",
-    level1: 0,
-    level2: 0,
-    level3: 0,
-  });
-
-  async function addSkill(e) {
-    e.preventDefault();
-    await fetch("/api/skills", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(form),
-    });
-    setForm({
-      name: "",
-      group: groups[0]?.title || "",
-      level1: 0,
-      level2: 0,
-      level3: 0,
-    });
-    if (reload) reload();
-  }
+  const [selectedTab, setSelectedTab] = useState(0);
 
   return (
-    <div style={{ paddingLeft: "2rem" }}>
+    <div style={{ paddingLeft: "1rem" }}>
       <h2>Review Your Skills</h2>
-      <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-        {groups.map((group) => (
-          <div key={group.title}>
-            <h4>{group.title}</h4>
-            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-              {group.items.map((name) => {
-                const s = skills.find(
-                  (x) => x.name && x.name.toLowerCase() === name.toLowerCase()
-                );
-                return (
-                  <SkillRow
-                    key={name}
-                    skill={s}
-                    name={name}
-                    group={group.title}
-                    onSaved={reload}
-                  />
-                );
-              })}
-            </div>
-          </div>
+      {/* Tab bar */}
+      <div style={{ display: "flex", gap: 4, marginBottom: 24 }}>
+        {groups.map((group, idx) => (
+          <button
+            key={group.title}
+            onClick={() => setSelectedTab(idx)}
+            style={{
+              padding: "8px 16px",
+              borderRadius: 4,
+              border: "1px solid #ccc",
+              background: selectedTab === idx ? "#e0e0e0" : "#fff",
+              fontWeight: selectedTab === idx ? "bold" : "normal",
+              cursor: "pointer"
+            }}
+          >
+            {group.title}
+          </button>
         ))}
+      </div>
+      {/* Skills for selected tab */}
+      <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+        <h4>{groups[selectedTab].title}</h4>
+        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+          {groups[selectedTab].items.map((name) => {
+            const s = skills.find(
+              (x) => x.name && x.name.toLowerCase() === name.toLowerCase()
+            );
+            return (
+              <SkillRow
+                key={name}
+                skill={s}
+                name={name}
+                group={groups[selectedTab].title}
+                onSaved={reload}
+              />
+            );
+          })}
+        </div>
       </div>
     </div>
   );
