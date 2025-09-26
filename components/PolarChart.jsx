@@ -29,7 +29,8 @@ export default function PolarChart({ skills = [] }) {
   const containerRef = useRef(null);
   const orderedLabels = useMemo(() => groups.flatMap((g) => g.items), []);
   const findSkill = (name) =>
-    skills.find((s) => s.name && s.name.toLowerCase() === name.toLowerCase()) || {};
+    skills.find((s) => s.name && s.name.toLowerCase() === name.toLowerCase()) ||
+    {};
 
   // Chart.js Radar chart data
   const radarData = {
@@ -86,10 +87,12 @@ export default function PolarChart({ skills = [] }) {
         await new Promise((resolve, reject) => {
           const css = document.createElement("link");
           css.rel = "stylesheet";
-          css.href = "https://cdn.anychart.com/releases/8.11.0/css/anychart-ui.min.css";
+          css.href =
+            "https://cdn.anychart.com/releases/8.11.0/css/anychart-ui.min.css";
           document.head.appendChild(css);
           const s = document.createElement("script");
-          s.src = "https://cdn.anychart.com/releases/8.11.0/js/anychart-bundle.min.js";
+          s.src =
+            "https://cdn.anychart.com/releases/8.11.0/js/anychart-bundle.min.js";
           s.onload = resolve;
           s.onerror = reject;
           document.body.appendChild(s);
@@ -145,14 +148,16 @@ export default function PolarChart({ skills = [] }) {
       xAxis.labels().fontColor("black").fontSize("1em");
       chart.yGrid().stroke("black");
       chart.xGrid().stroke("black");
-      chart.yGrid().palette([
-        "#FFFFFF8C",
-        "#FFFFFF73",
-        "#FFFFFF59",
-        "#FFFFFF40",
-        "#FFFFFF26",
-        "#FFFFFF0D",
-      ]);
+      chart
+        .yGrid()
+        .palette([
+          "#FFFFFF8C",
+          "#FFFFFF73",
+          "#FFFFFF59",
+          "#FFFFFF40",
+          "#FFFFFF26",
+          "#FFFFFF0D",
+        ]);
       chart.sortPointsByX(true);
       chart.innerRadius("70%");
       if (containerRef.current) {
@@ -211,10 +216,14 @@ export default function PolarChart({ skills = [] }) {
       tooltip: {
         callbacks: {
           label: function(context) {
-            return `${context.label}: Level ${context.raw}`;
+            const idx = context.dataIndex;
+            const skillName = polarAreaLabels[idx];
+            const value = polarAreaValues[idx];
+            let nextGoal = value < 3 ? `Click to set goal for Level ${value + 1}` : "Max Level";
+            return `${skillName}: Level ${value} (${nextGoal})`;
           }
         }
-      }
+      },
     },
     scale: {
       ticks: { beginAtZero: true, stepSize: 1, max: 3 },
@@ -225,8 +234,11 @@ export default function PolarChart({ skills = [] }) {
       if (elements && elements.length > 0) {
         const idx = elements[0].index;
         const skillName = polarAreaLabels[idx];
-        // TODO: open goal-setting modal or handle click
-        alert(`Set goal for: ${skillName}`);
+        const value = polarAreaValues[idx];
+        if (value < 3) {
+          // Only allow click for skills not at max level
+          alert(`Set goal for: ${skillName} (Level ${value + 1})`);
+        }
       }
     },
   };
@@ -237,19 +249,36 @@ export default function PolarChart({ skills = [] }) {
       <div style={{ marginBottom: 16 }}>
         <button
           onClick={() => setChartType("radar")}
-          style={{ marginRight: 8, padding: "8px 16px", background: chartType === "radar" ? "#e0e0e0" : "#fff", border: "1px solid #ccc", borderRadius: 4 }}
+          style={{
+            marginRight: 8,
+            padding: "8px 16px",
+            background: chartType === "radar" ? "#e0e0e0" : "#fff",
+            border: "1px solid #ccc",
+            borderRadius: 4,
+          }}
         >
           Radar Chart
         </button>
         <button
           onClick={() => setChartType("polar")}
-          style={{ marginRight: 8, padding: "8px 16px", background: chartType === "polar" ? "#e0e0e0" : "#fff", border: "1px solid #ccc", borderRadius: 4 }}
+          style={{
+            marginRight: 8,
+            padding: "8px 16px",
+            background: chartType === "polar" ? "#e0e0e0" : "#fff",
+            border: "1px solid #ccc",
+            borderRadius: 4,
+          }}
         >
           Polar Chart
         </button>
         <button
           onClick={() => setChartType("polarArea")}
-          style={{ padding: "8px 16px", background: chartType === "polarArea" ? "#e0e0e0" : "#fff", border: "1px solid #ccc", borderRadius: 4 }}
+          style={{
+            padding: "8px 16px",
+            background: chartType === "polarArea" ? "#e0e0e0" : "#fff",
+            border: "1px solid #ccc",
+            borderRadius: 4,
+          }}
         >
           Polar Area Chart
         </button>
@@ -260,7 +289,10 @@ export default function PolarChart({ skills = [] }) {
         </div>
       )}
       {chartType === "polar" && (
-        <div ref={containerRef} style={{ height: 900, width: "100%", maxWidth: 1900 }} />
+        <div
+          ref={containerRef}
+          style={{ height: 900, width: "100%", maxWidth: 1900 }}
+        />
       )}
       {chartType === "polarArea" && (
         <div style={{ marginTop: 48 }}>
@@ -273,28 +305,61 @@ export default function PolarChart({ skills = [] }) {
             <h4>Legend</h4>
             <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                <span style={{ width: 24, height: 24, background: "#acacac", display: "inline-block", borderRadius: "4px", border: "1px solid #333" }} />
+                <span
+                  style={{
+                    width: 24,
+                    height: 24,
+                    background: "#acacac",
+                    display: "inline-block",
+                    borderRadius: "4px",
+                    border: "1px solid #333",
+                  }}
+                />
                 <span>Level 1</span>
               </div>
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                <span style={{ width: 24, height: 24, background: "#f48458", display: "inline-block", borderRadius: "4px", border: "1px solid #333" }} />
+                <span
+                  style={{
+                    width: 24,
+                    height: 24,
+                    background: "#f48458",
+                    display: "inline-block",
+                    borderRadius: "4px",
+                    border: "1px solid #333",
+                  }}
+                />
                 <span>Level 2</span>
               </div>
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                <span style={{ width: 24, height: 24, background: "#ea6071", display: "inline-block", borderRadius: "4px", border: "1px solid #333" }} />
+                <span
+                  style={{
+                    width: 24,
+                    height: 24,
+                    background: "#ea6071",
+                    display: "inline-block",
+                    borderRadius: "4px",
+                    border: "1px solid #333",
+                  }}
+                />
                 <span>Level 3</span>
               </div>
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                <span style={{ width: 24, height: 24, background: "#fff", display: "inline-block", borderRadius: "4px", border: "1px solid #333" }} />
+                <span
+                  style={{
+                    width: 24,
+                    height: 24,
+                    background: "#fff",
+                    display: "inline-block",
+                    borderRadius: "4px",
+                    border: "1px solid #333",
+                  }}
+                />
                 <span>Unset</span>
               </div>
             </div>
           </div>
         </div>
       )}
-
-      
-    </div> 
+    </div>
   );
 }
-
