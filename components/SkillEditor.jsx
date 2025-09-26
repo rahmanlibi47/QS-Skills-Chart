@@ -192,14 +192,9 @@ function SkillRow({ skill, name, group, onSaved }) {
           color: "#999",
           maxWidth: 260,
           lineHeight: 1.5,
-          listStyle: "disc inside",
         }}
       >
-        
-        Know where and how to search for project-relevant information using
-        reliable sources and tools. <br /><br />Digest and organise secondary research
-        materials through detailed note-taking. <br /> <br />Identify relevant subject matter
-        experts who can provide valuable project insights.
+        {groups.find(g => g.title === group)?.descriptions?.[name] ?? ""}
       </p>
     </div>
   );
