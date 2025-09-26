@@ -4,6 +4,9 @@ import { useEffect, useState } from "react";
 import SkillEditor from "../components/SkillEditor";
 import PolarChart from "../components/PolarChart";
 import Landing from "./landing";
+import DownloadPDFButton from "../components/DownloadPDFButton";
+import DownloadScreenshotButton from "../components/DownloadScreenshotButton";
+import groups from "../lib/groups";
 
 export default function Page() {
   const [skills, setSkills] = useState([]);
@@ -23,13 +26,18 @@ export default function Page() {
   }
 
   return (
-    <main style={{ display: "flex" }}>
-      <div style={{ flex: 1 }}>
-        <SkillEditor skills={skills} onChange={setSkills} reload={loadSkills} userName={userName} />
+    <main style={{ display: "flex", flexDirection: "column" }}>
+      <div id="skills-content" style={{ display: "flex" }}>
+        <div style={{ flex: 1 }}>
+          <SkillEditor skills={skills} onChange={setSkills} reload={loadSkills} userName={userName} />
+        </div>
+        <div style={{ flex: 1 }}>
+          <PolarChart skills={skills} userName={userName} />
+        </div>
+        
       </div>
-      <div style={{ flex: 1 }}>
-        <PolarChart skills={skills} userName={userName} />
-      </div>
+      <DownloadScreenshotButton targetId="skills-content" />
+
     </main>
   );
 }

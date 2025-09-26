@@ -343,7 +343,7 @@ export default function PolarChart({ skills = [], userName = "" }) {
 
       {chartType === "polarArea" && (
         <div style={{ marginTop: 48 }}>
-          <div style={{ height: 600, width: "70%", paddingTop: 40 }}>
+          <div style={{ minHeight: 850,  }}>
             <PolarArea
               data={polarAreaData}
               options={polarAreaOptions}
