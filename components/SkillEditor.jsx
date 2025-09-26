@@ -117,15 +117,27 @@ function SkillRow({ skill, name, group, onSaved }) {
         {skill?.name ?? name}
       </div>
 
-      <input
-        type="number"
-        value={level}
-        min={0}
-        max={3}
-        defaultValue={0}
-        onChange={(e) => saveInstant(Math.max(0, Math.min(3, Number(e.target.value))))}
-        style={{ width: 60 }}
-      />
+      {/* Star selector for skill level */}
+      <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+        {[1, 2, 3].map((lvl) => (
+          <span
+            key={lvl}
+            onClick={() => saveInstant(lvl)}
+            style={{
+              cursor: "pointer",
+              fontSize: 28,
+              color: level >= lvl ? "#FFD700" : "#ccc",
+              transition: "color 0.2s",
+              marginRight: 2,
+              userSelect: "none",
+              textShadow: level >= lvl ? "0 0 4px #FFD700" : "none",
+            }}
+            title={`Set level ${lvl}`}
+          >
+            ★
+          </span>
+        ))}
+      </div>
     </div>
   );
 }
