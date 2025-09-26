@@ -51,7 +51,7 @@ export default function PolarChart({ skills = [] }) {
       ctx.restore();
     },
   };
-  const [chartType, setChartType] = useState("polar"); // "radar", "polar", or "polarArea"
+  const [chartType, setChartType] = useState("polarArea"); // "radar", "polar", or "polarArea"
   const containerRef = useRef(null);
   const orderedLabels = useMemo(() => groups.flatMap((g) => g.items), []);
   const findSkill = (name) =>
@@ -303,6 +303,18 @@ export default function PolarChart({ skills = [] }) {
         >
           Radar Chart
         </button> */}
+        
+        <button
+          onClick={() => setChartType("polarArea")}
+          style={{
+            padding: "8px 16px",
+            background: chartType === "polarArea" ? "#e0e0e0" : "#fff",
+            border: "1px solid #ccc",
+            borderRadius: 4,
+          }}
+        >
+          Polar Chart
+        </button>
         <button
           onClick={() => setChartType("polar")}
           style={{
@@ -313,18 +325,7 @@ export default function PolarChart({ skills = [] }) {
             borderRadius: 4,
           }}
         >
-          Polar Chart
-        </button>
-        <button
-          onClick={() => setChartType("polarArea")}
-          style={{
-            padding: "8px 16px",
-            background: chartType === "polarArea" ? "#e0e0e0" : "#fff",
-            border: "1px solid #ccc",
-            borderRadius: 4,
-          }}
-        >
-          Polar Area Chart
+          Radial Chart
         </button>
       </div>
       {chartType === "radar" && (
