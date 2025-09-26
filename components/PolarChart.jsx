@@ -25,7 +25,33 @@ ChartJS.register(
 );
 
 export default function PolarChart({ skills = [] }) {
-  const [chartType, setChartType] = useState("radar"); // "radar", "polar", or "polarArea"
+  // Chart.js plugin for dotted border lines between segments
+  const dottedBorderPlugin = {
+    id: "dottedBorderPlugin",
+    afterDraw: (chart) => {
+      if (chart.config.type !== "polarArea") return;
+      const ctx = chart.ctx;
+      const { chartArea, data } = chart;
+      const meta = chart.getDatasetMeta(0);
+      const centerX = chartArea.left + chartArea.width / 2;
+      const centerY = chartArea.top + chartArea.height / 2;
+      const radius = Math.min(chartArea.width, chartArea.height) / 2;
+      ctx.save();
+      ctx.setLineDash([1, 4]); // Dotted line: 4px dash, 6px gap
+      ctx.strokeStyle = "#222";
+      ctx.lineWidth = 1.2;
+      meta.data.forEach((arc, i) => {
+        const startAngle = arc.startAngle;
+        ctx.beginPath();
+        ctx.moveTo(centerX, centerY);
+        ctx.arc(centerX, centerY, radius, startAngle, startAngle, false);
+        ctx.lineTo(centerX + radius * Math.cos(startAngle), centerY + radius * Math.sin(startAngle));
+        ctx.stroke();
+      });
+      ctx.restore();
+    },
+  };
+  const [chartType, setChartType] = useState("polar"); // "radar", "polar", or "polarArea"
   const containerRef = useRef(null);
   const orderedLabels = useMemo(() => groups.flatMap((g) => g.items), []);
   const findSkill = (name) =>
@@ -189,10 +215,10 @@ export default function PolarChart({ skills = [] }) {
   const polarAreaLabels = orderedLabels;
   // Map skill name to group color
   const groupColors = {
-    "HCD": "#4269D0",
+    HCD: "#4269D0",
     "Project Management": "#EFB118",
     "Engagement & Communication / Business Development": "#FF725C",
-    "Research & Development": "#3CA951"
+    "Research & Development": "#3CA951",
   };
   // Helper to get group for a skill name
   function getGroupColor(skillName) {
@@ -217,7 +243,10 @@ export default function PolarChart({ skills = [] }) {
       {
         data: polarAreaValues,
         backgroundColor: polarAreaColors,
-        borderColor: polarAreaColors,
+        borderColor: "#f3f2f2ff", // strong border color
+        borderWidth: 0.5,
+        borderAlign: "inner", // Chart.js v3+ only
+        hoverOffset: 8,
       },
     ],
   };
@@ -226,15 +255,19 @@ export default function PolarChart({ skills = [] }) {
       legend: { display: false },
       tooltip: {
         callbacks: {
-          label: function(context) {
+          label: function (context) {
             const idx = context.dataIndex;
             const skillName = polarAreaLabels[idx];
             const value = polarAreaValues[idx];
-            let nextGoal = value < 3 ? `Click to set goal for Level ${value + 1}` : "Max Level";
+            let nextGoal =
+              value < 3
+                ? `Click to set goal for Level ${value + 1}`
+                : "Max Level";
             return `${skillName}: Level ${value} (${nextGoal})`;
-          }
-        }
+          },
+        },
       },
+      dottedBorderPlugin,
     },
     scale: {
       ticks: { beginAtZero: true, stepSize: 1, max: 3 },
@@ -258,7 +291,7 @@ export default function PolarChart({ skills = [] }) {
     <div>
       <h2>Skills Chart</h2>
       <div style={{ marginBottom: 16 }}>
-        <button
+        {/* <button
           onClick={() => setChartType("radar")}
           style={{
             marginRight: 8,
@@ -269,7 +302,7 @@ export default function PolarChart({ skills = [] }) {
           }}
         >
           Radar Chart
-        </button>
+        </button> */}
         <button
           onClick={() => setChartType("polar")}
           style={{
@@ -308,11 +341,11 @@ export default function PolarChart({ skills = [] }) {
       {chartType === "polarArea" && (
         <div style={{ marginTop: 48 }}>
           <h2>Polar Area Chart (Skills & Levels)</h2>
-          <div style={{ height: 400, width: "100%", maxWidth: 700 }}>
-            <PolarArea data={polarAreaData} options={polarAreaOptions} />
+          <div style={{ height: 900, width: "100%", maxWidth: 700 }}>
+            <PolarArea data={polarAreaData} options={polarAreaOptions} plugins={[dottedBorderPlugin]} />
           </div>
           {/* Legend */}
-          <div style={{ marginTop: 16 }}>
+          {/* <div style={{ marginTop: 16 }}>
             <h4>Legend</h4>
             <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
@@ -368,7 +401,7 @@ export default function PolarChart({ skills = [] }) {
                 <span>Unset</span>
               </div>
             </div>
-          </div>
+          </div> */}
         </div>
       )}
     </div>
