@@ -37,7 +37,7 @@ export default function PolarChart({ skills = [] }) {
       const centerY = chartArea.top + chartArea.height / 2;
       const radius = Math.min(chartArea.width, chartArea.height) / 2;
       ctx.save();
-      ctx.setLineDash([1, 4]); // Dotted line: 4px dash, 6px gap
+      ctx.setLineDash([2, 6]); // Dotted line: 4px dash, 6px gap
       ctx.strokeStyle = "#222";
       ctx.lineWidth = 1.2;
       meta.data.forEach((arc, i) => {
@@ -237,7 +237,7 @@ export default function PolarChart({ skills = [] }) {
         data: polarAreaValues,
         backgroundColor: polarAreaColors,
         borderColor: "#f3f2f2ff", // strong border color
-        borderWidth: 0.5,
+        borderWidth: 0.1,
         borderAlign: "inner", // Chart.js v3+ only
         hoverOffset: 8,
       },
