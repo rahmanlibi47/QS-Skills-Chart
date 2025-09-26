@@ -46,7 +46,10 @@ export default function PolarChart({ skills = [] }) {
         ctx.beginPath();
         ctx.moveTo(centerX, centerY);
         ctx.arc(centerX, centerY, radius, startAngle, startAngle, false);
-        ctx.lineTo(centerX + radius * Math.cos(startAngle), centerY + radius * Math.sin(startAngle));
+        ctx.lineTo(
+          centerX + radius * Math.cos(startAngle),
+          centerY + radius * Math.sin(startAngle)
+        );
         ctx.stroke();
       });
       ctx.restore();
@@ -128,10 +131,10 @@ export default function PolarChart({ skills = [] }) {
       const anychart = window.anychart;
       // Only show the highest level for each skill, and color by group
       const groupColors = {
-        "HCD": "#4269D0",
+        HCD: "#4269D0",
         "Project Management": "#EFB118",
         "Engagement & Communication / Business Development": "#FF725C",
-        "Research & Development": "#3CA951"
+        "Research & Development": "#3CA951",
       };
       function getGroupColor(skillName) {
         for (const group of groups) {
@@ -245,53 +248,73 @@ export default function PolarChart({ skills = [] }) {
     ],
   };
   const polarAreaOptions = {
-  plugins: {
-    legend: { display: false },
-    tooltip: {
-      callbacks: {
-        label: function (context) {
-          const idx = context.dataIndex;
-          const skillName = polarAreaLabels[idx];
-          const value = polarAreaValues[idx];
-          let nextGoal =
-            value < 3
-              ? `Click to set goal for Level ${value + 1}`
-              : "Max Level";
-          return `${skillName}: Level ${value} (${nextGoal})`;
+    plugins: {
+      legend: {
+        display: true,
+        labels: {
+          generateLabels: function (chart) {
+            // Only show group titles as legend items
+            const groupColors = {
+              HCD: "#4269D0",
+              "Project Management": "#EFB118",
+              "Engagement & Communication / Business Development": "#FF725C",
+              "Research & Development": "#3CA951",
+            };
+            return Object.entries(groupColors).map(([title, color]) => ({
+              text: title,
+              fillStyle: color,
+              strokeStyle: "#333",
+              lineWidth: 1,
+              hidden: false,
+              index: 0,
+            }));
+          },
         },
       },
-    },
-    datalabels: {
-      color: "#111",
-      font: {
-        weight: "bold",
-        size: 10,
+      tooltip: {
+        callbacks: {
+          label: function (context) {
+            const idx = context.dataIndex;
+            const value = polarAreaValues[idx];
+            // Show golden/yellow stars for the value
+            if (value > 0) {
+              // Use Unicode yellow star emoji
+              return "".padStart(value, "⭐");
+            } else {
+              return "";
+            }
+          },
+        },
       },
-     formatter: (value, context) =>
-    polarAreaLabels[context.dataIndex],
-  anchor: "end",  // base outside of arc
-  align: "end", // move further outward radially
-  offset: 0,     // bigger = further outside
-  clip: false,    // don’t cut off
+      datalabels: {
+        color: "#111",
+        font: {
+          weight: "bold",
+          size: 10,
+        },
+        formatter: (value, context) => polarAreaLabels[context.dataIndex],
+        anchor: "end", // base outside of arc
+        align: "end", // move further outward radially
+        offset: 0, // bigger = further outside
+        clip: false, // don’t cut off
+      },
     },
-  },
-  scale: {
-    ticks: { beginAtZero: true, stepSize: 1, max: 3 },
-  },
-  responsive: true,
-  maintainAspectRatio: false,
-  onClick: (evt, elements) => {
-    if (elements && elements.length > 0) {
-      const idx = elements[0].index;
-      const skillName = polarAreaLabels[idx];
-      const value = polarAreaValues[idx];
-      if (value < 3) {
-        alert(`Set goal for: ${skillName} (Level ${value + 1})`);
+    scale: {
+      ticks: { beginAtZero: true, stepSize: 1, max: 3 },
+    },
+    responsive: true,
+    maintainAspectRatio: false,
+    onClick: (evt, elements) => {
+      if (elements && elements.length > 0) {
+        const idx = elements[0].index;
+        const skillName = polarAreaLabels[idx];
+        const value = polarAreaValues[idx];
+        if (value < 3) {
+          alert(`Set goal for: ${skillName} (Level ${value + 1})`);
+        }
       }
-    }
-  },
-};
-
+    },
+  };
 
   return (
     <div>
@@ -309,7 +332,7 @@ export default function PolarChart({ skills = [] }) {
         >
           Radar Chart
         </button> */}
-        
+
         <button
           onClick={() => setChartType("polarArea")}
           style={{
@@ -340,75 +363,18 @@ export default function PolarChart({ skills = [] }) {
         </div>
       )}
       {chartType === "polar" && (
-        <div
-          ref={containerRef}
-          style={{ height: 700, width: "100%", }}
-        />
+        <div ref={containerRef} style={{ height: 700, width: "100%" }} />
       )}
       {chartType === "polarArea" && (
         <div style={{ marginTop: 48 }}>
-          <h2>Polar Area Chart (Skills & Levels)</h2>
           <div style={{ height: 700, width: "100%" }}>
-            <PolarArea data={polarAreaData} options={polarAreaOptions} plugins={[dottedBorderPlugin]} />
+            <PolarArea
+              data={polarAreaData}
+              options={polarAreaOptions}
+              plugins={[dottedBorderPlugin]}
+            />
           </div>
-          {/* Legend */}
-          {/* <div style={{ marginTop: 16 }}>
-            <h4>Legend</h4>
-            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                <span
-                  style={{
-                    width: 24,
-                    height: 24,
-                    background: "#acacac",
-                    display: "inline-block",
-                    borderRadius: "4px",
-                    border: "1px solid #333",
-                  }}
-                />
-                <span>Level 1</span>
-              </div>
-              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                <span
-                  style={{
-                    width: 24,
-                    height: 24,
-                    background: "#f48458",
-                    display: "inline-block",
-                    borderRadius: "4px",
-                    border: "1px solid #333",
-                  }}
-                />
-                <span>Level 2</span>
-              </div>
-              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                <span
-                  style={{
-                    width: 24,
-                    height: 24,
-                    background: "#ea6071",
-                    display: "inline-block",
-                    borderRadius: "4px",
-                    border: "1px solid #333",
-                  }}
-                />
-                <span>Level 3</span>
-              </div>
-              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                <span
-                  style={{
-                    width: 24,
-                    height: 24,
-                    background: "#fff",
-                    display: "inline-block",
-                    borderRadius: "4px",
-                    border: "1px solid #333",
-                  }}
-                />
-                <span>Unset</span>
-              </div>
-            </div>
-          </div> */}
+          {/* Legend for group color codes */}
         </div>
       )}
     </div>
