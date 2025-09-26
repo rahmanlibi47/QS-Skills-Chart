@@ -8,7 +8,7 @@ export default function SkillEditor({ skills = [], onChange, reload }) {
 
   return (
     <div style={{ paddingLeft: "1rem" }}>
-      <h2>Review Your Skills</h2>
+      <h2>Review Your Current Skills</h2>
       {/* Tab bar */}
       <div style={{ display: "flex", gap: 4, marginBottom: 24 }}>
         {groups.map((group, idx) => (
@@ -30,7 +30,6 @@ export default function SkillEditor({ skills = [], onChange, reload }) {
       </div>
       {/* Skills for selected tab */}
       <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-        <h4>{groups[selectedTab].title}</h4>
         <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
           {groups[selectedTab].items.map((name) => {
             const s = skills.find(
@@ -110,62 +109,81 @@ function SkillRow({ skill, name, group, onSaved }) {
   const badgeColor = groupColors[group] || "#ccc";
 
   return (
-    <div
-      style={{
-        display: "flex",
-        gap: 18,
-        alignItems: "center",
-        paddingLeft: "2rem",
-      }}
-    >
+    <div>
       <div
         style={{
-          flex: "0 0 260px",
-          fontSize: "20px",
           display: "flex",
+          gap: 18,
           alignItems: "center",
-          gap: 8,
+          paddingLeft: "2rem",
         }}
       >
-        {skill?.name ?? name}
-      </div>
-
-      {/* Star selector for skill level, with 'Not yet tried' icon */}
-      <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-        <span
-          onClick={() => saveInstant(0)}
+        <div
           style={{
-            cursor: "pointer",
-            fontSize: 24,
-            color: level === 0 ? "#888" : "#ccc",
-            marginRight: 2,
-            userSelect: "none",
-            padding: "2px 6px",
-            transition: "color 0.2s, border 0.2s, background 0.2s",
+            flex: "0 0 260px",
+            fontSize: "20px",
+            display: "flex",
+            alignItems: "center",
+            gap: 8,
           }}
-          title="Not yet tried"
         >
-          ●
-        </span>
-        {[1, 2, 3].map((lvl) => (
+          {skill?.name ?? name}
+        </div>
+
+        {/* Star selector for skill level, with 'Not yet tried' icon */}
+        <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
           <span
-            key={lvl}
-            onClick={() => saveInstant(lvl)}
+            onClick={() => saveInstant(0)}
             style={{
               cursor: "pointer",
-              fontSize: 28,
-              color: level >= lvl ? "#FFD700" : "#ccc",
-              transition: "color 0.2s",
+              fontSize: 24,
+              color: level === 0 ? "#888" : "#ccc",
               marginRight: 2,
               userSelect: "none",
-              textShadow: level >= lvl ? "0 0 4px #FFD700" : "none",
+              padding: "2px 6px",
+              transition: "color 0.2s, border 0.2s, background 0.2s",
             }}
-            title={`Set level ${lvl}`}
+            title="Not yet tried"
           >
-            ★
+            ●
           </span>
-        ))}
+          {[1, 2, 3].map((lvl) => (
+            <span
+              key={lvl}
+              onClick={() => saveInstant(lvl)}
+              style={{
+                cursor: "pointer",
+                fontSize: 28,
+                color: level >= lvl ? "#FFD700" : "#ccc",
+                transition: "color 0.2s",
+                marginRight: 2,
+                userSelect: "none",
+                textShadow: level >= lvl ? "0 0 4px #FFD700" : "none",
+              }}
+              title={`Set level ${lvl}`}
+            >
+              ★
+            </span>
+          ))}
+        </div>
       </div>
+
+      <p
+        style={{
+          margin: "6px 0 0 0",
+          paddingLeft: 34,
+          fontSize: 12,
+          color: "#999",
+          maxWidth: 260,
+          lineHeight: 1.5,
+          listStyle: "disc inside",
+        }}
+      >
+        Lorem ipsum dolor sit amet consectetur, <br />
+        adipisicing elit. Quod fugiat Dicta ea autem illum adipiscm ad minima
+        officia?
+        <br />
+      </p>
     </div>
   );
 }
