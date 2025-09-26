@@ -187,6 +187,22 @@ export default function PolarChart({ skills = [] }) {
 
   // --- Polar Area Chart: Each skill as a segment, value is its level, color by level ---
   const polarAreaLabels = orderedLabels;
+  // Map skill name to group color
+  const groupColors = {
+    "HCD": "#4269D0",
+    "Project Management": "#EFB118",
+    "Engagement & Communication / Business Development": "#FF725C",
+    "Research & Development": "#3CA951"
+  };
+  // Helper to get group for a skill name
+  function getGroupColor(skillName) {
+    for (const group of groups) {
+      if (group.items.includes(skillName)) {
+        return groupColors[group.title] || "#ccc";
+      }
+    }
+    return "#ccc";
+  }
   const polarAreaValues = orderedLabels.map((name) => {
     const s = findSkill(name);
     if (s.level3 === 3) return 3;
@@ -194,12 +210,7 @@ export default function PolarChart({ skills = [] }) {
     if (s.level1 === 1) return 1;
     return 0;
   });
-  const polarAreaColors = polarAreaValues.map((v) => {
-    if (v === 1) return "#acacac";
-    if (v === 2) return "#f48458";
-    if (v === 3) return "#ea6071";
-    return "#ccc";
-  });
+  const polarAreaColors = orderedLabels.map((name) => getGroupColor(name));
   const polarAreaData = {
     labels: polarAreaLabels,
     datasets: [

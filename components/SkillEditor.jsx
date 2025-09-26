@@ -97,11 +97,14 @@ function SkillRow({ skill, name, group, onSaved }) {
     if (onSaved) onSaved();
   }
 
-  // Determine color based on level value
-  let badgeColor = "#ccc";
-  if (level === 1) badgeColor = "#acacac";
-  else if (level === 2) badgeColor = "#f48458";
-  else if (level === 3) badgeColor = "#ea6071";
+  // Determine color based on group title
+  const groupColors = {
+    "HCD": "#4269D0",
+    "Project Management": "#EFB118",
+    "Engagement & Communication / Business Development": "#FF725C",
+    "Research & Development": "#3CA951"
+  };
+  const badgeColor = groupColors[group] || "#ccc";
 
   return (
     <div
@@ -113,7 +116,6 @@ function SkillRow({ skill, name, group, onSaved }) {
       }}
     >
       <div style={{ flex: "0 0 260px", fontSize: "20px", display: "flex", alignItems: "center", gap: 8 }}>
-        <span style={{ width: 18, height: 18, background: badgeColor, display: "inline-block", borderRadius: "50%", border: "1px solid #333" }} />
         {skill?.name ?? name}
       </div>
 
