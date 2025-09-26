@@ -39,7 +39,7 @@ export default function PolarChart({ skills = [] }) {
       const radius = Math.min(chartArea.width, chartArea.height) / 2;
       ctx.save();
       ctx.setLineDash([2, 6]); // Dotted line: 4px dash, 6px gap
-      ctx.strokeStyle = "#f1f1f1ff";
+      ctx.strokeStyle = "#f8f3f3ff";
       ctx.lineWidth = 1.2;
       meta.data.forEach((arc, i) => {
         const startAngle = arc.startAngle;
@@ -107,6 +107,106 @@ export default function PolarChart({ skills = [] }) {
     responsive: true,
     maintainAspectRatio: false,
   };
+
+  // AnyChart polar chart logic
+  useEffect(() => {
+    if (chartType !== "polar") return;
+    let chartInstance = null;
+    async function loadAndDraw() {
+      if (!window.anychart) {
+        await new Promise((resolve, reject) => {
+          const css = document.createElement("link");
+          css.rel = "stylesheet";
+          css.href =
+            "https://cdn.anychart.com/releases/8.11.0/css/anychart-ui.min.css";
+          document.head.appendChild(css);
+          const s = document.createElement("script");
+          s.src =
+            "https://cdn.anychart.com/releases/8.11.0/js/anychart-bundle.min.js";
+          s.onload = resolve;
+          s.onerror = reject;
+          document.body.appendChild(s);
+        });
+      }
+      const anychart = window.anychart;
+      // Only show the highest level for each skill, and color by group
+      const groupColors = {
+        HCD: "#4269D0",
+        "Project Management": "#EFB118",
+        "Engagement & Communication / Business Development": "#FF725C",
+        "Research & Development": "#3CA951",
+      };
+      function getGroupColor(skillName) {
+        for (const group of groups) {
+          if (group.items.includes(skillName)) {
+            return groupColors[group.title] || "#ccc";
+          }
+        }
+        return "#ccc";
+      }
+      // Build data for each skill with its value and color
+      const skillData = orderedLabels.map((name) => {
+        const skill = findSkill(name);
+        let value = 0;
+        if (skill.level3 === 3) value = 3;
+        else if (skill.level2 === 2) value = 2;
+        else if (skill.level1 === 1) value = 1;
+        return { x: name, value, fill: { color: getGroupColor(name) } };
+      });
+      const chart = anychart.polar();
+      const series = chart.column(skillData);
+      series.zIndex(1);
+      chart.xScale("ordinal");
+      chart.yScale().minimum(0).maximum(3);
+      chart.yScale().ticks({ interval: 1 });
+      chart.yScale().stackMode("value");
+      const yAxis = chart.yAxis();
+      yAxis.stroke("black");
+      yAxis.overlapMode("allow-overlap");
+      yAxis.labels().fontColor("black").fontSize("0.9em");
+      yAxis.labels().format("{%Value}");
+      const xAxis = chart.xAxis();
+      xAxis.stroke("black");
+      xAxis.overlapMode("allow-overlap");
+      xAxis.labels().fontColor("black").fontSize("1em");
+      chart.yGrid().stroke("black");
+      chart.xGrid().stroke("black");
+      chart
+        .yGrid()
+        .palette([
+          "#FFFFFF8C",
+          "#FFFFFF73",
+          "#FFFFFF59",
+          "#FFFFFF40",
+          "#FFFFFF26",
+          "#FFFFFF0D",
+        ]);
+      chart.sortPointsByX(true);
+      chart.innerRadius("70%");
+      if (containerRef.current) {
+        try {
+          containerRef.current.innerHTML = "";
+        } catch (e) {}
+        chart.container(containerRef.current);
+        chart.draw();
+        chartInstance = chart;
+      }
+    }
+    loadAndDraw().catch((err) => console.error("Error loading AnyChart:", err));
+    return () => {
+      try {
+        if (chartInstance) chartInstance.dispose();
+      } catch (e) {}
+    };
+    // eslint-disable-next-line
+  }, [skills, chartType]);
+
+  // Color codes for display below
+  const colorCodes = [
+    { label: "Level 1", color: "#acacac" },
+    { label: "Level 2", color: "#f48458" },
+    { label: "Level 3", color: "#ea6071" },
+  ];
 
   // --- Polar Area Chart: Each skill as a segment, value is its level, color by level ---
   const polarAreaLabels = orderedLabels;
@@ -257,7 +357,14 @@ export default function PolarChart({ skills = [] }) {
           Radial Chart
         </button> */}
       </div>
-
+      {chartType === "radar" && (
+        <div style={{ height: 700, width: "100%" }}>
+          <Radar data={radarData} options={radarOptions} />
+        </div>
+      )}
+      {chartType === "polar" && (
+        <div ref={containerRef} style={{ height: 700, width: "100%" }} />
+      )}
       {chartType === "polarArea" && (
         <div style={{ marginTop: 48 }}>
           <div style={{ height: 700, width: "100%" }}>
