@@ -61,6 +61,8 @@ export default function SkillEditor({ skills = [], onChange, reload }) {
                 group={groups[selectedTab].title}
                 onSaved={reload}
                 email={email}
+                onChange={onChange}
+                skills={skills}
               />
             );
           })}
@@ -72,7 +74,7 @@ export default function SkillEditor({ skills = [], onChange, reload }) {
 
 import { useEffect } from "react";
 
-function SkillRow({ skill, name, group, onSaved, email }) {
+function SkillRow({ skill, name, group, onSaved, email, onChange, skills }) {
   // Single value for level
   const getInitialLevel = () => {
     if (skill?.level3) return 3;
@@ -99,10 +101,25 @@ function SkillRow({ skill, name, group, onSaved, email }) {
   function saveInstant(val) {
     setLevel(val); // update UI instantly
     const updatedForm = getLevels(val);
+
+    // Update local skills state instantly
+    let newSkills;
+    if (skill && skill._id) {
+      newSkills = skills.map((s) =>
+        s._id === skill._id ? { ...s, ...updatedForm } : s
+      );
+    } else {
+      // Add new skill locally
+      newSkills = [
+        ...skills,
+        { name, group, ...updatedForm }
+      ];
+    }
+    if (onChange) onChange(newSkills);
+
     // Save to backend asynchronously
     (async () => {
       if (skill && skill._id) {
-        console.log("skill ", skill);
         await fetch("/api/skills", {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
