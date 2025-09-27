@@ -27,6 +27,8 @@ ChartJS.register(
 );
 
 export default function PolarChart({ skills = [], userName = "" }) {
+
+  useEffect(() => {console.log("skills", skills)}, [skills]);
   // Helper to lighten a hex color by a percent (0-100)
   function lightenColor(hex, percent) {
     // Remove # if present
