@@ -2,8 +2,10 @@
 
 import { useState } from "react";
 import groups from "../lib/groups";
+import { useEmail } from "../components/Providers";
 
 export default function SkillEditor({ skills = [], onChange, reload }) {
+  const { email, setEmail } = useEmail();
   const [selectedTab, setSelectedTab] = useState(0);
 
   // Group colors for tabs (same as PolarChart)
@@ -58,6 +60,7 @@ export default function SkillEditor({ skills = [], onChange, reload }) {
                 name={name}
                 group={groups[selectedTab].title}
                 onSaved={reload}
+                email={email}
               />
             );
           })}
@@ -69,7 +72,7 @@ export default function SkillEditor({ skills = [], onChange, reload }) {
 
 import { useEffect } from "react";
 
-function SkillRow({ skill, name, group, onSaved }) {
+function SkillRow({ skill, name, group, onSaved, email }) {
   // Single value for level
   const getInitialLevel = () => {
     if (skill?.level3) return 3;
@@ -99,16 +102,17 @@ function SkillRow({ skill, name, group, onSaved }) {
     // Save to backend asynchronously
     (async () => {
       if (skill && skill._id) {
+        console.log("skill ", skill);
         await fetch("/api/skills", {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ _id: skill._id, ...updatedForm }),
+          body: JSON.stringify({ email, _id: skill._id, ...updatedForm }),
         });
       } else {
         await fetch("/api/skills", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ name, group, ...updatedForm }),
+          body: JSON.stringify({ email, name, group, ...updatedForm }),
         });
       }
       if (onSaved) onSaved();
@@ -194,7 +198,7 @@ function SkillRow({ skill, name, group, onSaved }) {
           lineHeight: 1.5,
         }}
       >
-        {groups.find(g => g.title === group)?.descriptions?.[name] ?? ""}
+        {groups.find((g) => g.title === group)?.descriptions?.[name] ?? ""}
       </p>
     </div>
   );

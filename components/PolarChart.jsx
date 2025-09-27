@@ -303,7 +303,7 @@ export default function PolarChart({ skills = [], userName = "" }) {
 
   return (
     <div>
-      <h2>Skills view for {userName}</h2>
+      <h2>Skills view for {userName.email || ""}</h2>
       <div>
         {/* <button
           onClick={() => setChartType("radar")}
