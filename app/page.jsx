@@ -125,20 +125,26 @@ export default function Page() {
       level3: 3,
     },
   ]);
+   const [userName, setUserName] = useState("");
+
 
   return (
     <main style={{ display: "flex", flexDirection: "column" }}>
-      <div id="skills-content" style={{ display: "flex" }}>
-        <div style={{ flex: 1 }}>
-          <SkillEditor
-            skills={skills}
-            onChange={setSkills}
-          />
+      {!userName ? (
+        <Landing onSubmit={({ userName }) => setUserName(userName)} />
+      ) : (
+        <div id="skills-content" style={{ display: "flex" }}>
+          <div style={{ flex: 1 }}>
+            <SkillEditor
+              skills={skills}
+              onChange={setSkills}
+            />
+          </div>
+          <div style={{ flex: 1 }}>
+            <PolarChart skills={skills} userName={userName} />
+          </div>
         </div>
-        <div style={{ flex: 1 }}>
-          <PolarChart skills={skills} />
-        </div>
-      </div>
+      )}
     </main>
   );
 }

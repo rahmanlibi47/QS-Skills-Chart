@@ -285,7 +285,7 @@ export default function PolarChart({ skills = [], userName = "" }) {
 
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
-      <h2 style={{ fontSize: "29px", fontWeight: 700 }}>Skill map for Neha</h2>
+  <h2 style={{ fontSize: "29px", fontWeight: 700 }}>Skill map for {userName || "Name"}</h2>
       <div
         style={{
           flex: 1,
