@@ -131,7 +131,8 @@ export default function PolarChart({ skills = [], userName = "" }) {
   };
   const [chartType, setChartType] = useState("polarArea"); // "radar", "polar", or "polarArea"
   const containerRef = useRef(null);
-  const orderedLabels = useMemo(() => groups.flatMap((g) => g.items), []);
+  // Always recalculate chart data and colors when skills change
+  const orderedLabels = groups.flatMap((g) => g.items);
   const findSkill = (name) =>
     skills.find((s) => s.name && s.name.toLowerCase() === name.toLowerCase()) ||
     {};

@@ -10,17 +10,121 @@ import groups from "../lib/groups";
 import { useEmail } from "../components/Providers";
 
 export default function Page() {
-  const email = "libin@quicksand.co.in";
-  const [skills, setSkills] = useState([]);
-
-  async function loadSkills() {
-    const res = await fetch(`/api/skills?email=${encodeURIComponent(email)}`);
-    if (res.ok) setSkills(await res.json());
-  }
-
-  useEffect(() => {
-    loadSkills();
-  }, []);
+  // Dummy skills data for testing
+  const [skills, setSkills] = useState([
+    {
+      name: "Pitching",
+      group: "Engagement & Communication / Business Development",
+      level1: 1,
+      level2: 2,
+      level3: 3,
+    },
+    {
+      name: "Field Research",
+      group: "HCD",
+      level1: 1,
+      level2: 2,
+      level3: 3,
+    },
+    {
+      name: "Secondary Research",
+      group: "HCD",
+      level1: 1,
+      level2: 0,
+      level3: 0,
+    },
+    {
+      name: "Analysis & Synthesis",
+      group: "HCD",
+      level1: 1,
+      level2: 0,
+      level3: 0,
+    },
+    {
+      name: "Prototyping & Ideation",
+      group: "HCD",
+      level1: 1,
+      level2: 2,
+      level3: 3,
+    },
+    {
+      name: "Workshop Facilitation",
+      group: "HCD",
+      level1: 1,
+      level2: 2,
+      level3: 0,
+    },
+    {
+      name: "Crafting Narratives",
+      group: "HCD",
+      level1: 1,
+      level2: 2,
+      level3: 3,
+    },
+    {
+      name: "Publishing",
+      group: "Engagement & Communication / Business Development",
+      level1: 1,
+      level2: 2,
+      level3: 3,
+    },
+    {
+      name: "Presenting",
+      group: "Engagement & Communication / Business Development",
+      level1: 1,
+      level2: 0,
+      level3: 0,
+    },
+    {
+      name: "Networking",
+      group: "Engagement & Communication / Business Development",
+      level1: 1,
+      level2: 2,
+      level3: 3,
+    },
+    {
+      name: "Planning & Scheduling",
+      group: "Project Management",
+      level1: 1,
+      level2: 2,
+      level3: 3,
+    },
+    {
+      name: "Risk Management & Problem Solving",
+      group: "Project Management",
+      level1: 1,
+      level2: 2,
+      level3: 3,
+    },
+    {
+      name: "Budget & Resource Management",
+      group: "Project Management",
+      level1: 1,
+      level2: 2,
+      level3: 3,
+    },
+    {
+      name: "Stakeholder & Team Management",
+      group: "Project Management",
+      level1: 1,
+      level2: 0,
+      level3: 0,
+    },
+    {
+      name: "Strategic experimentation",
+      group: "Research & Development",
+      level1: 1,
+      level2: 2,
+      level3: 0,
+    },
+    {
+      name: "Reflective learning",
+      group: "Research & Development",
+      level1: 1,
+      level2: 2,
+      level3: 3,
+    },
+  ]);
 
   return (
     <main style={{ display: "flex", flexDirection: "column" }}>
@@ -29,12 +133,10 @@ export default function Page() {
           <SkillEditor
             skills={skills}
             onChange={setSkills}
-            reload={loadSkills}
-            email={email}
           />
         </div>
         <div style={{ flex: 1 }}>
-          <PolarChart skills={skills} email={email}/>
+          <PolarChart skills={skills} />
         </div>
       </div>
     </main>

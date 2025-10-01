@@ -103,33 +103,17 @@ function SkillRow({ skill, name, group, onSaved, email, onChange, skills }) {
 
     // Update local skills state instantly
     let newSkills;
-    if (skill && skill._id) {
+    if (skill) {
+      // Update by name and group (not _id)
       newSkills = skills.map((s) =>
-        s._id === skill._id ? { ...s, ...updatedForm } : s
+        s.name === name && s.group === group ? { ...s, ...updatedForm } : s
       );
     } else {
       // Add new skill locally
       newSkills = [...skills, { name, group, ...updatedForm }];
     }
     if (onChange) onChange(newSkills);
-
-    // Save to backend asynchronously
-    (async () => {
-      if (skill && skill._id) {
-        await fetch("/api/skills", {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, _id: skill._id, ...updatedForm }),
-        });
-      } else {
-        await fetch("/api/skills", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, name, group, ...updatedForm }),
-        });
-      }
-      if (onSaved) onSaved();
-    })();
+    if (onSaved) onSaved();
   }
 
   // Determine color based on group title
