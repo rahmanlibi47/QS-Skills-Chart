@@ -68,7 +68,11 @@ export default function PolarChart({ skills = [], userName = "" }) {
       // Use a fixed radius for all labels, based on the largest available outerRadius
       let maxOuterRadius = 0;
       meta.data.forEach((arc) => {
-        if (arc && typeof arc.outerRadius === "number" && arc.outerRadius > maxOuterRadius) {
+        if (
+          arc &&
+          typeof arc.outerRadius === "number" &&
+          arc.outerRadius > maxOuterRadius
+        ) {
           maxOuterRadius = arc.outerRadius;
         }
       });
@@ -85,8 +89,8 @@ export default function PolarChart({ skills = [], userName = "" }) {
         const label = labels[i];
         if (label.includes("&")) {
           const [first, second] = label.split("&");
-          ctx.fillText(first.trim(), x, y - 8);
-          ctx.fillText("& " + second.trim(), x, y + 8);
+          ctx.fillText(first.trim() + " &", x, y - 8);
+          ctx.fillText(second.trim(), x, y + 8);
         } else {
           ctx.fillText(label, x, y);
         }
@@ -185,11 +189,14 @@ export default function PolarChart({ skills = [], userName = "" }) {
     },
     plugins: {
       legend: {
-        display: true,
+        maxHeight: 200,
+        display: false,
         position: "bottom",
+        align: "start", // align to top if on right
         labels: {
-          boxWidth: 44,
-          padding: 50, // Adds space above the legend (effectively margin-top)
+          boxWidth: 20,
+          padding: 20, // spacing between each legend row
+          usePointStyle: true,
 
           generateLabels: function (chart) {
             const groupColors = {
@@ -284,16 +291,46 @@ export default function PolarChart({ skills = [], userName = "" }) {
         <div style={{ flex: 1 }}>
           {chartType === "polarArea" && (
             <div style={{ marginTop: 48 }}>
-              <div s>
+              <div>
                 <PolarArea
                   data={polarAreaData}
                   options={polarAreaOptions}
                   plugins={[dottedBorderPlugin, outerLabelPlugin]}
-                  height={700}
+                  height={800}
                   width={1000}
                 />
               </div>
-              {/* Legend for group color codes */}
+              <div style={{ marginTop: "30px" }}>
+                <ul style={{ listStyle: "none", padding: 0 }}>
+                  {Object.entries({
+                    HCD: "#4269D0",
+                    "Project Management": "#EFB118",
+                    "Engagement & Communication / Business Development":
+                      "#FF725C",
+                    "Research & Development": "#3CA951",
+                  }).map(([title, color]) => (
+                    <li
+                      key={title}
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        marginBottom: "8px",
+                      }}
+                    >
+                      <span
+                        style={{
+                          display: "inline-block",
+                          width: "16px",
+                          height: "16px",
+                          backgroundColor: color,
+                          marginRight: "8px",
+                        }}
+                      ></span>
+                      {title}
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </div>
           )}
         </div>
