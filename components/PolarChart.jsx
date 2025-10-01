@@ -50,6 +50,7 @@ export default function PolarChart({ skills = [], userName = "" }) {
     return `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)}`;
   }
   // Plugin to draw radial labels fixed at chart edge
+  // Fixed labels outside arcs
   const outerLabelPlugin = {
     id: "outerLabelPlugin",
     afterDraw(chart) {
@@ -62,24 +63,18 @@ export default function PolarChart({ skills = [], userName = "" }) {
       const outerRadius =
         meta.data[0]?.outerRadius ||
         Math.min(chartArea.width, chartArea.height) / 2;
-      const margin = 12;
 
       ctx.save();
-      ctx.font = "12px sans-serif";
+      ctx.font = "12.5px sans-serif";
       ctx.fillStyle = "#111";
-      ctx.textAlign = "center";
       ctx.textBaseline = "middle";
 
-      // Place labels at the center angle of each segment
       meta.data.forEach((arc, i) => {
         if (!arc) return;
-        let angle = (arc.startAngle + arc.endAngle) / 2;
-        // Add small offset to avoid clipping at top/bottom
-        if (angle % Math.PI === 0) {
-          angle += 0.54;
-        }
-        const x = centerX + (outerRadius + margin) * Math.cos(angle);
-        const y = centerY + (outerRadius + margin) * Math.sin(angle);
+        const angle = (arc.startAngle + arc.endAngle) / 2;
+        const x = centerX + (outerRadius + 25) * Math.cos(angle);
+        const y = centerY + (outerRadius + 25) * Math.sin(angle);
+        ctx.textAlign = x < centerX ? "right" : "left";
         ctx.fillText(labels[i], x, y);
       });
 
@@ -122,52 +117,6 @@ export default function PolarChart({ skills = [], userName = "" }) {
   const findSkill = (name) =>
     skills.find((s) => s.name && s.name.toLowerCase() === name.toLowerCase()) ||
     {};
-
-  // Chart.js Radar chart data
-  const radarData = {
-    labels: orderedLabels,
-    datasets: [
-      {
-        label: "Level 1",
-        data: orderedLabels.map((name) => findSkill(name).level1 ?? 0),
-        backgroundColor: "rgba(172, 172, 172, 0.2)",
-        borderColor: "#acacac",
-        pointBackgroundColor: "#acacac",
-      },
-      {
-        label: "Level 2",
-        data: orderedLabels.map((name) => findSkill(name).level2 ?? 0),
-        backgroundColor: "rgba(244, 132, 88, 0.2)",
-        borderColor: "#f48458",
-        pointBackgroundColor: "#65f458ff",
-      },
-      {
-        label: "Level 3",
-        data: orderedLabels.map((name) => findSkill(name).level3 ?? 0),
-        backgroundColor: "rgba(234, 96, 113, 0.2)",
-        borderColor: "#ea6071",
-        pointBackgroundColor: "#ea6071",
-      },
-    ],
-  };
-
-  const radarOptions = {
-    scales: {
-      r: {
-        min: 0,
-        max: 3,
-        ticks: { stepSize: 1, color: "black" },
-        pointLabels: { color: "black", font: { size: 14 } },
-        grid: { color: "#acacac" },
-      },
-    },
-    plugins: {
-      legend: { position: "top" },
-      tooltip: {},
-    },
-    responsive: true,
-    maintainAspectRatio: false,
-  };
 
   // --- Polar Area Chart: Each skill as a segment, value is its level, color by level ---
   const polarAreaLabels = orderedLabels;
@@ -217,6 +166,9 @@ export default function PolarChart({ skills = [], userName = "" }) {
     ],
   };
   const polarAreaOptions = {
+    layout: {
+      padding: 90, // gives extra breathing space for outer labels
+    },
     plugins: {
       legend: {
         display: true,
@@ -224,6 +176,7 @@ export default function PolarChart({ skills = [], userName = "" }) {
         labels: {
           boxWidth: 44,
           padding: 50, // Adds space above the legend (effectively margin-top)
+
           generateLabels: function (chart) {
             const groupColors = {
               HCD: "#4269D0",
@@ -276,18 +229,18 @@ export default function PolarChart({ skills = [], userName = "" }) {
         enabled: false,
       },
     },
-  scales: {
-    r: {
+    scales: {
+      r: {
+        ticks: {
+          display: false,
+        },
+      },
+    },
+    scale: {
       ticks: {
-        display: false
-      }
-    }
-  },
-  scale: {
-    ticks: {
-      display: false
-    }
-  },
+        display: false,
+      },
+    },
     responsive: true,
     maintainAspectRatio: false,
     onClick: (evt, elements) => {
@@ -304,8 +257,8 @@ export default function PolarChart({ skills = [], userName = "" }) {
 
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
-     {/* <h2>Skill map for {userName.email ? (userName.email.split("@")[0].charAt(0).toUpperCase() + userName.email.split("@")[0].slice(1)) : ""}</h2> */}
-     <h2>Skill map for Neha</h2>
+      {/* <h2>Skill map for {userName.email ? (userName.email.split("@")[0].charAt(0).toUpperCase() + userName.email.split("@")[0].slice(1)) : ""}</h2> */}
+      <h2>Skill map for Neha</h2>
       <div
         style={{
           flex: 1,
@@ -317,11 +270,13 @@ export default function PolarChart({ skills = [], userName = "" }) {
         <div style={{ flex: 1 }}>
           {chartType === "polarArea" && (
             <div style={{ marginTop: 48 }}>
-              <div style={{ minHeight: 850 }}>
+              <div s>
                 <PolarArea
                   data={polarAreaData}
                   options={polarAreaOptions}
                   plugins={[dottedBorderPlugin, outerLabelPlugin]}
+                  height={850}
+                  width={600}
                 />
               </div>
               {/* Legend for group color codes */}
