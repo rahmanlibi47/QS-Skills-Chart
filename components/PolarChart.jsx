@@ -62,10 +62,10 @@ export default function PolarChart({ skills = [], userName = "" }) {
       const outerRadius =
         meta.data[0]?.outerRadius ||
         Math.min(chartArea.width, chartArea.height) / 2;
-      const margin = 5;
+      const margin = 12;
 
       ctx.save();
-      ctx.font = "10px sans-serif";
+      ctx.font = "12px sans-serif";
       ctx.fillStyle = "#111";
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
@@ -221,8 +221,9 @@ export default function PolarChart({ skills = [], userName = "" }) {
       legend: {
         display: true,
         position: "bottom",
-
         labels: {
+          boxWidth: 44,
+          padding: 50, // Adds space above the legend (effectively margin-top)
           generateLabels: function (chart) {
             const groupColors = {
               HCD: "#4269D0",
@@ -230,7 +231,6 @@ export default function PolarChart({ skills = [], userName = "" }) {
               "Engagement & Communication / Business Development": "#FF725C",
               "Research & Development": "#3CA951",
             };
-            // Map group to indices in chart.data.labels
             const groupIndices = {};
             Object.keys(groupColors).forEach((group) => {
               groupIndices[group] = [];
@@ -249,8 +249,9 @@ export default function PolarChart({ skills = [], userName = "" }) {
               fillStyle: color,
               strokeStyle: "#333",
               lineWidth: 1,
+              marginTop: 48,
               hidden: false,
-              indices: groupIndices[title], // store all indices for this group
+              indices: groupIndices[title],
               datasetIndex: 0,
               groupIndex: i,
             }));
@@ -261,7 +262,6 @@ export default function PolarChart({ skills = [], userName = "" }) {
           const indices = legendItem.indices;
           if (!indices || !indices.length) return;
           const meta = chart.getDatasetMeta(0);
-          // Toggle visibility for all segments in the group
           const anyVisible = indices.some((idx) => !meta.data[idx].hidden);
           indices.forEach((idx) => {
             meta.data[idx].hidden = anyVisible ? true : false;
@@ -269,20 +269,11 @@ export default function PolarChart({ skills = [], userName = "" }) {
           chart.update();
         },
       },
+      datalabels: {
+        display: false,
+      },
       tooltip: {
-        callbacks: {
-          label: function (context) {
-            const idx = context.dataIndex;
-            const value = polarAreaValues[idx];
-            // Show golden/yellow stars for the value
-            if (value > 0) {
-              // Use Unicode yellow star emoji
-              return "".padStart(value, "⭐");
-            } else {
-              return "";
-            }
-          },
-        },
+        enabled: false,
       },
     },
     scale: {
@@ -305,60 +296,35 @@ export default function PolarChart({ skills = [], userName = "" }) {
   };
 
   return (
-    <div>
+    <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
       <h2>Skills view for {userName.email || ""}</h2>
-      <div>
-        {/* <button
-          onClick={() => setChartType("radar")}
-          style={{
-            marginRight: 8,
-            padding: "8px 16px",
-            background: chartType === "radar" ? "#e0e0e0" : "#fff",
-            border: "1px solid #ccc",
-            borderRadius: 4,
-          }}
-        >
-          Radar Chart
-        </button> */}
-
-        {/* <button
-          onClick={() => setChartType("polarArea")}
-          style={{
-            padding: "8px 16px",
-            background: chartType === "polarArea" ? "#e0e0e0" : "#fff",
-            border: "1px solid #ccc",
-            borderRadius: 4,
-          }}
-        >
-          Polar Chart
-        </button>
-        <button
-          onClick={() => setChartType("polar")}
-          style={{
-            marginRight: 8,
-            padding: "8px 16px",
-            background: chartType === "polar" ? "#e0e0e0" : "#fff",
-            border: "1px solid #ccc",
-            borderRadius: 4,
-          }}
-        >
-          Radial Chart
-        </button> */}
-      </div>
-
-      {chartType === "polarArea" && (
-        <div style={{ marginTop: 48 }}>
-          <div style={{ minHeight: 850 }}>
-            <PolarArea
-              data={polarAreaData}
-              options={polarAreaOptions}
-              plugins={[dottedBorderPlugin, outerLabelPlugin]}
-            />
-          </div>
-          {/* Legend for group color codes */}
+      <div>{/* ...existing chart type buttons (if enabled)... */}</div>
+      <div
+        style={{
+          flex: 1,
+          display: "flex",
+          flexDirection: "row",
+          alignItems: "flex-start",
+        }}
+      >
+        <div style={{ flex: 1 }}>
+          {chartType === "polarArea" && (
+            <div style={{ marginTop: 48 }}>
+              <div style={{ minHeight: 850 }}>
+                <PolarArea
+                  data={polarAreaData}
+                  options={polarAreaOptions}
+                  plugins={[dottedBorderPlugin, outerLabelPlugin]}
+                />
+              </div>
+              {/* Legend for group color codes */}
+            </div>
+          )}
         </div>
-      )}
-      <DownloadScreenshotButton targetId="skills-content" />
+        <div style={{ alignSelf: "flex-start", marginLeft: 24 }}>
+          <DownloadScreenshotButton targetId="skills-content" />
+        </div>
+      </div>
     </div>
   );
 }

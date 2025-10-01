@@ -158,7 +158,8 @@ function SkillRow({ skill, name, group, onSaved, email, onChange, skills }) {
         <div
           style={{
             flex: "0 0 260px",
-            fontSize: "20px",
+            fontSize: "24px",
+            fontWeight: 600,  
             display: "flex",
             alignItems: "center",
             gap: 8,
@@ -205,18 +206,42 @@ function SkillRow({ skill, name, group, onSaved, email, onChange, skills }) {
         </div>
       </div>
 
-      <p
-        style={{
-          margin: "6px 0 0 0",
-          paddingLeft: 34,
-          fontSize: 12,
-          color: "#999",
-          maxWidth: 260,
-          lineHeight: 1.5,
-        }}
-      >
-        {groups.find((g) => g.title === group)?.descriptions?.[name] ?? ""}
-      </p>
+      {(() => {
+        const desc = groups.find((g) => g.title === group)?.descriptions?.[name];
+        if (Array.isArray(desc)) {
+          return (
+            <ul style={{
+              margin: "6px 0 0 0",
+              paddingLeft: 34,
+              fontSize: '14px',
+              color: "#464242ff",
+              maxWidth: 260,
+              lineHeight: 1.5,
+            }}>
+              {desc.map((d, i) => (
+                <li key={i} style={{ marginBottom: 2 }}>{d}</li>
+              ))}
+            </ul>
+          );
+        } else if (desc) {
+          return (
+            <p
+              style={{
+                margin: "6px 0 0 0",
+                paddingLeft: 34,
+                fontSize: '12px',
+                color: "#585454ff",
+                maxWidth: 260,
+                lineHeight: 1.5,
+              }}
+            >
+              {desc}
+            </p>
+          );
+        } else {
+          return null;
+        }
+      })()}
     </div>
   );
 }
