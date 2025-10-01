@@ -9,7 +9,7 @@ export default function SkillEditor({ skills = [], onChange, reload }) {
 
   // Group colors for tabs (same as PolarChart)
   const groupColors = {
-    HCD: "#4269D0",
+    HCD: "#0f2564ff",
     "Project Management": "#EFB118",
     "Engagement & Communication / Business Development": "#FF725C",
     "Research & Development": "#3CA951",
@@ -25,9 +25,9 @@ export default function SkillEditor({ skills = [], onChange, reload }) {
 
   return (
     <div style={{ paddingLeft: "1rem" }}>
-      <h2>Review Your Current Skills</h2>
+      <h3>Review Your Current Skills</h3>
       {/* Tab bar */}
-      <div style={{ display: "flex", gap: 4, marginBottom: 24 }}>
+      <div style={{ display: "flex", gap: 4, marginBottom: 55 }}>
         {groups.map((group, idx) => {
           const color = groupColors[group.title] || "#ccc";
           const selected = selectedTab === idx;
@@ -36,7 +36,7 @@ export default function SkillEditor({ skills = [], onChange, reload }) {
               key={group.title}
               onClick={() => setSelectedTab(idx)}
               style={{
-                padding: "8px 16px",
+                padding: "4px 8px",
                 borderRadius: 4,
                 border: `2px solid ${color}`,
                 background: color,

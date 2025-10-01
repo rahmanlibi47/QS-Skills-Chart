@@ -83,7 +83,7 @@ export default function PolarChart({ skills = [], userName = "" }) {
       meta.data.forEach((arc, i) => {
         if (!arc) return;
         const angle = (arc.startAngle + arc.endAngle) / 2;
-        const x = centerX + (maxOuterRadius + 25) * Math.cos(angle);
+        const x = centerX + (maxOuterRadius + 1) * Math.cos(angle);
         const y = centerY + (maxOuterRadius + 25) * Math.sin(angle);
         ctx.textAlign = x < centerX ? "right" : "left";
         const label = labels[i];
@@ -279,8 +279,7 @@ export default function PolarChart({ skills = [], userName = "" }) {
 
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
-      {/* <h2>Skill map for {userName.email ? (userName.email.split("@")[0].charAt(0).toUpperCase() + userName.email.split("@")[0].slice(1)) : ""}</h2> */}
-      <h2>Skill map for Neha</h2>
+      <h2 style={{ fontSize: "29px", fontWeight: 700 }}>Skill map for Neha</h2>
       <div
         style={{
           flex: 1,
