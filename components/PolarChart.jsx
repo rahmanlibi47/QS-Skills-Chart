@@ -276,11 +276,18 @@ export default function PolarChart({ skills = [], userName = "" }) {
         enabled: false,
       },
     },
-    scale: {
+  scales: {
+    r: {
       ticks: {
-        display: false,
-      },
-    },
+        display: false
+      }
+    }
+  },
+  scale: {
+    ticks: {
+      display: false
+    }
+  },
     responsive: true,
     maintainAspectRatio: false,
     onClick: (evt, elements) => {
