@@ -198,7 +198,7 @@ function SkillRow({ skill, name, group, onSaved, email, onChange, skills }) {
                 paddingLeft: 34,
                 fontSize: "15px",
                 color: "#464242ff",
-                maxWidth: 510,
+                maxWidth: 650,
                 lineHeight: 1.6,
               }}
             >
@@ -217,7 +217,7 @@ function SkillRow({ skill, name, group, onSaved, email, onChange, skills }) {
                 paddingLeft: 34,
                 fontSize: "12px",
                 color: "#585454ff",
-                maxWidth: 510,
+                maxWidth: 650,
                 lineHeight: 1.5,
               }}
             >
