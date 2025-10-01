@@ -61,7 +61,7 @@ export default function PolarChart({ skills = [], userName = "" }) {
       const centerX = (chartArea.left + chartArea.right) / 2;
       const centerY = (chartArea.top + chartArea.bottom) / 2;
       ctx.save();
-      ctx.font = "12.5px sans-serif";
+      ctx.font = "600 12.5px sans-serif";
       ctx.fillStyle = "#111";
       ctx.textBaseline = "middle";
 
@@ -257,15 +257,15 @@ export default function PolarChart({ skills = [], userName = "" }) {
         max: 3,
         ticks: {
           stepSize: 1,
-          display: true,
-          color: '#bbb',
-          font: { size: 12 },
-          callback: function(val) {
-            return val > 0 ? val : '';
+          display: false,
+          color: "#726b6bff",
+          font: { size: 8 },
+          callback: function (val) {
+            return val > 0 ? val : "";
           },
         },
         grid: {
-          color: '#eee',
+          color: "#d6d0d0ff",
         },
       },
     },
@@ -286,7 +286,7 @@ export default function PolarChart({ skills = [], userName = "" }) {
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
       {/* <h2>Skill map for {userName.email ? (userName.email.split("@")[0].charAt(0).toUpperCase() + userName.email.split("@")[0].slice(1)) : ""}</h2> */}
-      <h2 style={{fontSize:'28px'}}>Skill map for Neha</h2>
+      <h2 style={{ fontSize: "28px" }}>Skill map for Neha</h2>
       <div
         style={{
           flex: 1,
