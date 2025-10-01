@@ -327,7 +327,7 @@ export default function PolarChart({ skills = [], userName = "" }) {
             </div>
           )}
         </div>
-        <div style={{ alignSelf: "flex-start", marginLeft: 24 }}>
+        <div style={{ alignSelf: "flex-end", marginRight: 24 }}>
           <DownloadScreenshotButton targetId="skills-content" />
         </div>
       </div>
