@@ -172,6 +172,7 @@ function SkillRow({
         >
           {skill?.name ?? name}
         </div>
+        <hr />
 
         {/* add a state variable to change stars to Review button */}
         {!reviewMode ? (
@@ -217,6 +218,7 @@ function SkillRow({
           </div>
         )}
       </div>
+      <hr style={{ background: "red" }} />
       {/* add a state variable to show the below componenet for the id */}
       {reviewMode &&
         (() => {
@@ -231,7 +233,7 @@ function SkillRow({
                   paddingLeft: 34,
                   fontSize: "15px",
                   color: "#464242ff",
-                  maxWidth: 510,
+                  maxWidth: 750,
                   lineHeight: 1.6,
                 }}
               >
@@ -250,8 +252,8 @@ function SkillRow({
                   paddingLeft: 34,
                   fontSize: "12px",
                   color: "#585454ff",
-                  maxWidth: 510,
-                  lineHeight: 1.5,
+                  maxWidth: 750,
+                  lineHeight: 1.6,
                 }}
               >
                 {desc}

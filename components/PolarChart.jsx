@@ -61,7 +61,7 @@ export default function PolarChart({ skills = [], userName = "" }) {
       const centerX = (chartArea.left + chartArea.right) / 2;
       const centerY = (chartArea.top + chartArea.bottom) / 2;
       ctx.save();
-      ctx.font = "12.5px sans-serif";
+      ctx.font = "600 12.5px sans-serif";
       ctx.fillStyle = "#111";
       ctx.textBaseline = "middle";
 
@@ -248,7 +248,7 @@ export default function PolarChart({ skills = [], userName = "" }) {
         display: false,
       },
       tooltip: {
-        enabled: false,
+        enabled: true,
       },
     },
     scales: {
@@ -263,8 +263,8 @@ export default function PolarChart({ skills = [], userName = "" }) {
         display: false,
       },
     },
-    responsive: true,
-    maintainAspectRatio: false,
+    responsive: false,
+    maintainAspectRatio: true,
     onClick: (evt, elements) => {
       if (elements && elements.length > 0) {
         const idx = elements[0].index;
