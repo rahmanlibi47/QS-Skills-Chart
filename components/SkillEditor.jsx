@@ -9,10 +9,10 @@ export default function SkillEditor({ skills = [], onChange, reload }) {
 
   // Group colors for tabs (same as PolarChart)
   const groupColors = {
-    HCD: "#0f2564ff",
-    "Project Management": "#EFB118",
-    "Engagement & Communication / Business Development": "#FF725C",
-    "Research & Development": "#3CA951",
+    HCD: "#5172cfff",
+    "Project Management": "#cead5aff",
+    "Engagement & Communication / Business Development": "#e77b6bff",
+    "Research & Development": "#4bdb68ff",
   };
 
   // Track which skill is open for review (by id: name__group)

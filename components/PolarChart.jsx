@@ -83,7 +83,7 @@ export default function PolarChart({ skills = [], userName = "" }) {
       meta.data.forEach((arc, i) => {
         if (!arc) return;
         const angle = (arc.startAngle + arc.endAngle) / 2;
-        const x = centerX + (maxOuterRadius + 1) * Math.cos(angle);
+        const x = centerX + (maxOuterRadius + 20) * Math.cos(angle);
         const y = centerY + (maxOuterRadius + 25) * Math.sin(angle);
         ctx.textAlign = x < centerX ? "right" : "left";
         const label = labels[i];
@@ -112,8 +112,8 @@ export default function PolarChart({ skills = [], userName = "" }) {
       const centerY = chartArea.top + chartArea.height / 2;
       const radius = Math.min(chartArea.width, chartArea.height) / 2;
       ctx.save();
-      ctx.setLineDash([2, 6]); // Dotted line: 4px dash, 6px gap
-      ctx.strokeStyle = "#c4c4c4ff";
+      ctx.setLineDash([6, 6]); // Dotted line: 4px dash, 6px gap
+      ctx.strokeStyle = "#bdb3b3ff";
       ctx.lineWidth = 1.2;
       meta.data.forEach((arc, i) => {
         const startAngle = arc.startAngle;

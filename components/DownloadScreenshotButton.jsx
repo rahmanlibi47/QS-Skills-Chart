@@ -19,8 +19,8 @@ export default function DownloadScreenshotButton({ targetId }) {
       onClick={handleDownload}
       title="Download skills as PDF"
       style={{
-        margin: "16px 0 0 0",
-        padding: "10px 18px",
+        margin: "8px 0 0 0",
+        padding: "8px 8px",
         borderRadius: 6,
         background: "#4269D0",
         color: "#fff",
