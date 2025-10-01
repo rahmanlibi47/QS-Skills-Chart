@@ -60,22 +60,36 @@ export default function PolarChart({ skills = [], userName = "" }) {
       const meta = chart.getDatasetMeta(0);
       const centerX = (chartArea.left + chartArea.right) / 2;
       const centerY = (chartArea.top + chartArea.bottom) / 2;
-      const outerRadius =
-        meta.data[0]?.outerRadius ||
-        Math.min(chartArea.width, chartArea.height) / 2;
-
       ctx.save();
       ctx.font = "12.5px sans-serif";
       ctx.fillStyle = "#111";
       ctx.textBaseline = "middle";
 
+      // Use a fixed radius for all labels, based on the largest available outerRadius
+      let maxOuterRadius = 0;
+      meta.data.forEach((arc) => {
+        if (arc && typeof arc.outerRadius === "number" && arc.outerRadius > maxOuterRadius) {
+          maxOuterRadius = arc.outerRadius;
+        }
+      });
+      if (!maxOuterRadius) {
+        maxOuterRadius = Math.min(chartArea.width, chartArea.height) / 2;
+      }
+
       meta.data.forEach((arc, i) => {
         if (!arc) return;
         const angle = (arc.startAngle + arc.endAngle) / 2;
-        const x = centerX + (outerRadius + 25) * Math.cos(angle);
-        const y = centerY + (outerRadius + 25) * Math.sin(angle);
+        const x = centerX + (maxOuterRadius + 25) * Math.cos(angle);
+        const y = centerY + (maxOuterRadius + 25) * Math.sin(angle);
         ctx.textAlign = x < centerX ? "right" : "left";
-        ctx.fillText(labels[i], x, y);
+        const label = labels[i];
+        if (label.includes("&")) {
+          const [first, second] = label.split("&");
+          ctx.fillText(first.trim(), x, y - 8);
+          ctx.fillText("& " + second.trim(), x, y + 8);
+        } else {
+          ctx.fillText(label, x, y);
+        }
       });
 
       ctx.restore();
@@ -275,8 +289,8 @@ export default function PolarChart({ skills = [], userName = "" }) {
                   data={polarAreaData}
                   options={polarAreaOptions}
                   plugins={[dottedBorderPlugin, outerLabelPlugin]}
-                  height={850}
-                  width={600}
+                  height={700}
+                  width={1000}
                 />
               </div>
               {/* Legend for group color codes */}
