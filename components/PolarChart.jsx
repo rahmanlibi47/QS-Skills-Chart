@@ -248,23 +248,29 @@ export default function PolarChart({ skills = [], userName = "" }) {
         display: false,
       },
       tooltip: {
-        enabled: true,
+        enabled: false,
       },
     },
     scales: {
       r: {
+        min: 0,
+        max: 3,
         ticks: {
+          stepSize: 1,
           display: false,
+          color: "#726b6bff",
+          font: { size: 8 },
+          callback: function (val) {
+            return val > 0 ? val : "";
+          },
+        },
+        grid: {
+          color: "#d6d0d0ff",
         },
       },
     },
-    scale: {
-      ticks: {
-        display: false,
-      },
-    },
-    responsive: false,
-    maintainAspectRatio: true,
+    responsive: true,
+    maintainAspectRatio: false,
     onClick: (evt, elements) => {
       if (elements && elements.length > 0) {
         const idx = elements[0].index;
