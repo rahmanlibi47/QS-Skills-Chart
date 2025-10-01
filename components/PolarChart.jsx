@@ -297,8 +297,7 @@ export default function PolarChart({ skills = [], userName = "" }) {
 
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
-      <h2>Skills view for {userName.email || ""}</h2>
-      <div>{/* ...existing chart type buttons (if enabled)... */}</div>
+     <h2>Skill map for {userName.email ? (userName.email.split("@")[0].charAt(0).toUpperCase() + userName.email.split("@")[0].slice(1)) : ""}</h2>
       <div
         style={{
           flex: 1,
