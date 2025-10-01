@@ -28,7 +28,7 @@ export async function GET(req) {
 export async function POST(req) {
   try {
     const body = await req.json();
-   console.log("POST body ", body);
+    console.log("POST body ", body);
 
     const { email, ...skillData } = body;
     if (!email) {
@@ -36,7 +36,10 @@ export async function POST(req) {
     }
     let employee = await Employee.findOne({ email });
     if (!employee) {
-      return NextResponse.json({ error: "Employee not found" }, { status: 404 });
+      return NextResponse.json(
+        { error: "Employee not found" },
+        { status: 404 }
+      );
     }
     employee.skills.push(skillData);
     await employee.save();

@@ -5,7 +5,6 @@ import groups from "../lib/groups";
 import { useEmail } from "../components/Providers";
 
 export default function SkillEditor({ skills = [], onChange, reload }) {
-  const { email, setEmail } = useEmail();
   const [selectedTab, setSelectedTab] = useState(0);
 
   // Group colors for tabs (same as PolarChart)
@@ -60,7 +59,7 @@ export default function SkillEditor({ skills = [], onChange, reload }) {
                 name={name}
                 group={groups[selectedTab].title}
                 onSaved={reload}
-                email={email}
+                email={"libin@quicksand.co.in"}
                 onChange={onChange}
                 skills={skills}
               />
@@ -110,10 +109,7 @@ function SkillRow({ skill, name, group, onSaved, email, onChange, skills }) {
       );
     } else {
       // Add new skill locally
-      newSkills = [
-        ...skills,
-        { name, group, ...updatedForm }
-      ];
+      newSkills = [...skills, { name, group, ...updatedForm }];
     }
     if (onChange) onChange(newSkills);
 
@@ -159,7 +155,7 @@ function SkillRow({ skill, name, group, onSaved, email, onChange, skills }) {
           style={{
             flex: "0 0 260px",
             fontSize: "24px",
-            fontWeight: 600,  
+            fontWeight: 600,
             display: "flex",
             alignItems: "center",
             gap: 8,
@@ -207,19 +203,25 @@ function SkillRow({ skill, name, group, onSaved, email, onChange, skills }) {
       </div>
 
       {(() => {
-        const desc = groups.find((g) => g.title === group)?.descriptions?.[name];
+        const desc = groups.find((g) => g.title === group)?.descriptions?.[
+          name
+        ];
         if (Array.isArray(desc)) {
           return (
-            <ul style={{
-              margin: "6px 0 0 0",
-              paddingLeft: 34,
-              fontSize: '14px',
-              color: "#464242ff",
-              maxWidth: 260,
-              lineHeight: 1.5,
-            }}>
+            <ul
+              style={{
+                margin: "10px 1px 0 0",
+                paddingLeft: 34,
+                fontSize: "15px",
+                color: "#464242ff",
+                maxWidth: 460,
+                lineHeight: 1.6,
+              }}
+            >
               {desc.map((d, i) => (
-                <li key={i} style={{ marginBottom: 2 }}>{d}</li>
+                <li key={i} style={{ marginBottom: 2 }}>
+                  {d}
+                </li>
               ))}
             </ul>
           );
@@ -229,9 +231,9 @@ function SkillRow({ skill, name, group, onSaved, email, onChange, skills }) {
               style={{
                 margin: "6px 0 0 0",
                 paddingLeft: 34,
-                fontSize: '12px',
+                fontSize: "12px",
                 color: "#585454ff",
-                maxWidth: 260,
+                maxWidth: 460,
                 lineHeight: 1.5,
               }}
             >

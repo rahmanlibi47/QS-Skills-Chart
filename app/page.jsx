@@ -10,26 +10,17 @@ import groups from "../lib/groups";
 import { useEmail } from "../components/Providers";
 
 export default function Page() {
-  const { email, setEmail } = useEmail();
+  const email = "libin@quicksand.co.in";
   const [skills, setSkills] = useState([]);
-  const [userName, setUserName] = useState("");
 
   async function loadSkills() {
-    if (!userName) return;
-    console.log("Loading skills for", userName);
-    const res = await fetch(
-      `/api/skills?email=${encodeURIComponent(userName.email)}`
-    );
+    const res = await fetch(`/api/skills?email=${encodeURIComponent(email)}`);
     if (res.ok) setSkills(await res.json());
   }
 
   useEffect(() => {
     loadSkills();
-  }, [userName]);
-
-  if (!userName) {
-    return <Landing onSubmit={setUserName} />;
-  }
+  }, []);
 
   return (
     <main style={{ display: "flex", flexDirection: "column" }}>
@@ -39,11 +30,11 @@ export default function Page() {
             skills={skills}
             onChange={setSkills}
             reload={loadSkills}
-            userName={userName}
+            email={email}
           />
         </div>
         <div style={{ flex: 1 }}>
-          <PolarChart skills={skills} userName={userName} />
+          <PolarChart skills={skills} email={email}/>
         </div>
       </div>
     </main>
