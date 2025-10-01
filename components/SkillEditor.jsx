@@ -15,6 +15,14 @@ export default function SkillEditor({ skills = [], onChange, reload }) {
     "Research & Development": "#3CA951",
   };
 
+  // Track which skill is open for review (by id: name__group)
+  const [openReviewId, setOpenReviewId] = useState(() => {
+    // Expand first skill by default
+    const firstGroup = groups[0];
+    const firstName = firstGroup.items[0];
+    return `${firstName}__${firstGroup.title}`;
+  });
+
   return (
     <div style={{ paddingLeft: "1rem" }}>
       <h2>Review Your Current Skills</h2>
@@ -48,20 +56,25 @@ export default function SkillEditor({ skills = [], onChange, reload }) {
       {/* Skills for selected tab */}
       <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
         <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-          {groups[selectedTab].items.map((name) => {
+          {groups[selectedTab].items.map((name, idx) => {
             const s = skills.find(
               (x) => x.name && x.name.toLowerCase() === name.toLowerCase()
             );
+            const groupTitle = groups[selectedTab].title;
+            const skillId = `${name}__${groupTitle}`;
+            const isOpen = openReviewId === skillId;
             return (
               <SkillRow
-                key={name}
+                key={skillId}
                 skill={s}
                 name={name}
-                group={groups[selectedTab].title}
+                group={groupTitle}
                 onSaved={reload}
                 email={"libin@quicksand.co.in"}
                 onChange={onChange}
                 skills={skills}
+                reviewMode={isOpen}
+                openReview={() => setOpenReviewId(skillId)}
               />
             );
           })}
@@ -73,7 +86,17 @@ export default function SkillEditor({ skills = [], onChange, reload }) {
 
 import { useEffect } from "react";
 
-function SkillRow({ skill, name, group, onSaved, email, onChange, skills }) {
+function SkillRow({
+  skill,
+  name,
+  group,
+  onSaved,
+  email,
+  onChange,
+  skills,
+  reviewMode,
+  openReview,
+}) {
   // Single value for level
   const getInitialLevel = () => {
     if (skill?.level3) return 3;
@@ -82,6 +105,8 @@ function SkillRow({ skill, name, group, onSaved, email, onChange, skills }) {
     return 0;
   };
   const [level, setLevel] = useState(getInitialLevel());
+
+  // reviewMode and openReview are now props from parent
 
   useEffect(() => {
     setLevel(getInitialLevel());
@@ -148,86 +173,94 @@ function SkillRow({ skill, name, group, onSaved, email, onChange, skills }) {
           {skill?.name ?? name}
         </div>
 
-        {/* Star selector for skill level, with 'Not yet tried' icon */}
-        <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-          <span
-            onClick={() => saveInstant(0)}
-            style={{
-              cursor: "pointer",
-              fontSize: 24,
-              color: level === 0 ? "#888" : "#ccc",
-              marginRight: 2,
-              userSelect: "none",
-              padding: "2px 6px",
-              transition: "color 0.2s, border 0.2s, background 0.2s",
-            }}
-            title="Not yet tried"
-          >
-            ●
-          </span>
-          {[1, 2, 3].map((lvl) => (
+        {/* add a state variable to change stars to Review button */}
+        {!reviewMode ? (
+          <button style={{ cursor: "pointer" }} onClick={openReview}>
+            {" "}
+            Review{" "}
+          </button>
+        ) : (
+          <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
             <span
-              key={lvl}
-              onClick={() => saveInstant(lvl)}
+              onClick={() => saveInstant(0)}
               style={{
                 cursor: "pointer",
-                fontSize: 28,
-                color: level >= lvl ? "#FFD700" : "#ccc",
-                transition: "color 0.2s",
+                fontSize: 24,
+                color: level === 0 ? "#888" : "#ccc",
                 marginRight: 2,
                 userSelect: "none",
-                textShadow: level >= lvl ? "0 0 4px #FFD700" : "none",
+                padding: "2px 6px",
+                transition: "color 0.2s, border 0.2s, background 0.2s",
               }}
-              title={`Set level ${lvl}`}
+              title="Not yet tried"
             >
-              ★
+              &#9679;
             </span>
-          ))}
-        </div>
+            {[1, 2, 3].map((lvl) => (
+              <span
+                key={lvl}
+                onClick={() => saveInstant(lvl)}
+                style={{
+                  cursor: "pointer",
+                  fontSize: 28,
+                  color: level >= lvl ? "#FFD700" : "#ccc",
+                  transition: "color 0.2s",
+                  marginRight: 2,
+                  userSelect: "none",
+                  textShadow: level >= lvl ? "0 0 4px #FFD700" : "none",
+                }}
+                title={`Set level ${lvl}`}
+              >
+                &#9733;
+              </span>
+            ))}
+          </div>
+        )}
       </div>
-
-      {(() => {
-        const desc = groups.find((g) => g.title === group)?.descriptions?.[
-          name
-        ];
-        if (Array.isArray(desc)) {
-          return (
-            <ul
-              style={{
-                margin: "10px 1px 0 0",
-                paddingLeft: 34,
-                fontSize: "15px",
-                color: "#464242ff",
-                maxWidth: 510,
-                lineHeight: 1.6,
-              }}
-            >
-              {desc.map((d, i) => (
-                <li key={i} style={{ marginBottom: 2 }}>
-                  {d}
-                </li>
-              ))}
-            </ul>
-          );
-        } else if (desc) {
-          return (
-            <p
-              style={{
-                margin: "6px 0 0 0",
-                paddingLeft: 34,
-                fontSize: "12px",
-                color: "#585454ff",
-                maxWidth: 510,
-                lineHeight: 1.5,
-              }}
-            >
-              {desc}
-            </p>
-          );
-        } else {
-          return null;
-        }
-      })()}
+      {/* add a state variable to show the below componenet for the id */}
+      {reviewMode &&
+        (() => {
+          const desc = groups.find((g) => g.title === group)?.descriptions?.[
+            name
+          ];
+          if (Array.isArray(desc)) {
+            return (
+              <ul
+                style={{
+                  margin: "10px 1px 0 0",
+                  paddingLeft: 34,
+                  fontSize: "15px",
+                  color: "#464242ff",
+                  maxWidth: 510,
+                  lineHeight: 1.6,
+                }}
+              >
+                {desc.map((d, i) => (
+                  <li key={i} style={{ marginBottom: 2 }}>
+                    {d}
+                  </li>
+                ))}
+              </ul>
+            );
+          } else if (desc) {
+            return (
+              <p
+                style={{
+                  margin: "6px 0 0 0",
+                  paddingLeft: 34,
+                  fontSize: "12px",
+                  color: "#585454ff",
+                  maxWidth: 510,
+                  lineHeight: 1.5,
+                }}
+              >
+                {desc}
+              </p>
+            );
+          } else {
+            return null;
+          }
+        })()}
     </div>
   );
 }
